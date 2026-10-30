@@ -1,4 +1,4 @@
-name: Build & Release APK
+name: Build Android APK
 
 on:
   push:
@@ -8,8 +8,8 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-apk:
-    name: Build Debug APK
+  build:
+    name: Build APK
     runs-on: ubuntu-latest
 
     steps:
@@ -26,52 +26,14 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/DXNStockpoint/gradlew
 
-      - name: Cache Gradle packages
-        uses: actions/cache@v4
-        with:
-          path: |
-            ~/.gradle/caches
-            ~/.gradle/wrapper
-          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
-          restore-keys: ${{ runner.os }}-gradle-
-
       - name: Build Debug APK
         working-directory: android/DXNStockpoint
-        run: ./gradlew assembleDebug --stacktrace
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
-          name: DXN-Stockpoint-debug-apk
-          path: android/DXNStockpoint/app/build/outputs/apk/debug/app-debug.apk
+          name: DXN-Stockpoint-APK
+          path: android/DXNStockpoint/app/build/outputs/apk/debug/*.apk
           retention-days: 30
-
-  build-release:
-    name: Build Release APK (unsigned)
-    runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main'
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: gradle
-
-      - name: Grant execute permission for gradlew
-        run: chmod +x android/DXNStockpoint/gradlew
-
-      - name: Build Release APK
-        working-directory: android/DXNStockpoint
-        run: ./gradlew assembleRelease --stacktrace
-
-      - name: Upload Release APK
-        uses: actions/upload-artifact@v4
-        with:
-          name: DXN-Stockpoint-release-apk
-          path: android/DXNStockpoint/app/build/outputs/apk/release/app-release-unsigned.apk
-          retention-days: 30
+          if-no-files-found: error

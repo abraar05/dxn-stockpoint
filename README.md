@@ -46,3 +46,4 @@ Go to **Actions → Build & Release APK → Artifacts** to download it.
 | GET | `/api/v1/orders` | Order history |
 | POST | `/api/v1/orders` | Place order |
 | GET | `/api/v1/dashboard` | Stats + low-stock |
+
