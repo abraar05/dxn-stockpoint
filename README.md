@@ -50,7 +50,7 @@ runs on free, forever tiers: GitHub Pages, GitHub Releases, InfinityFree
 | `api/` | PHP 8 API — no Composer, no framework, drop-in on shared hosting |
 | `docs/` | The web app (ES modules, no build step) + PWA manifest & service worker |
 | `android/DXNStockpoint/` | Kotlin + Jetpack Compose app |
-| `scripts/` | Local dev server, icon generator, toolchain provisioning |
+| `scripts/` | Local dev server, icon generator, toolchain provisioning, verification suites |
 | `.github/workflows/` | Pages deploy, InfinityFree FTP deploy, APK/AAB build |
 
 > `backend/` is the retired v1 Node/SQLite server. It is kept for reference only;
@@ -77,6 +77,20 @@ powershell -ExecutionPolicy Bypass -File scripts/build-android.ps1
 ```
 
 The emulator reaches the local API at `http://10.0.2.2:8099` (the app's default).
+
+### Prove it is actually in sync
+
+Two scripts run against a live API (`scripts/dev.ps1` first) and exit non-zero
+on any failure:
+
+```powershell
+# 22 checks: a web-shaped sale and an android-shaped sale land in one feed,
+# draw down one stock ledger, replay safely, and a settled client pulls nothing
+powershell -ExecutionPolicy Bypass -File scripts/verify-two-client-sync.ps1
+
+# 55 checks: the exact wire contract the Kotlin client is bound to
+powershell -ExecutionPolicy Bypass -File scripts/verify-android-contract.ps1
+```
 
 ## Using the app
 
