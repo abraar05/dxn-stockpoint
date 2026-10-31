@@ -1,19 +1,22 @@
-name: Build Android APK
+name: Build & Release Android APK
 
 on:
   push:
     branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    tags:
+      - 'v*'
   workflow_dispatch:
+
+permissions:
+  contents: write
 
 jobs:
   build:
-    name: Build APK
+    name: Build & Release APK
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Set up JDK 17
@@ -30,10 +33,41 @@ jobs:
         working-directory: android/DXNStockpoint
         run: ./gradlew assembleDebug --no-daemon --stacktrace
 
-      - name: Upload Debug APK
+      - name: Prepare APK for Release
+        run: |
+          mkdir -p release-assets
+          cp android/DXNStockpoint/app/build/outputs/apk/debug/*.apk release-assets/dxn-stockpoint-v1.1.0.apk
+          cp release-assets/dxn-stockpoint-v1.1.0.apk release-assets/dxn-stockpoint-latest.apk
+
+      - name: Upload Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: DXN-Stockpoint-APK
-          path: android/DXNStockpoint/app/build/outputs/apk/debug/*.apk
+          name: DXN-Stockpoint-v1.1.0-APK
+          path: release-assets/*.apk
           retention-days: 30
-          if-no-files-found: error
+
+      - name: Publish to GitHub Releases
+        uses: softprops/action-gh-release@v2
+        if: github.ref == 'refs/heads/main'
+        with:
+          tag_name: v1.1.0
+          name: "DXN Stockpoint v1.1.0 — Production Android Release"
+          body: |
+            ## DXN Stockpoint Mobile POS & Ordering System (v1.1.0) 📱🛒
+
+            Production-grade native Android app featuring bottom navigation bar, live PV computation, dual-tier pricing (Member & Retail), stock controls, and direct WhatsApp checkout.
+
+            ### ⬇️ Direct Download Link
+            👉 **[dxn-stockpoint-v1.1.0.apk](https://github.com/abraar05/dxn-stockpoint/releases/download/v1.1.0/dxn-stockpoint-v1.1.0.apk)**
+
+            ---
+            ### 🌟 Key Upgrades in v1.1.0:
+            - **Persistent Bottom Navigation**: Seamless 1-tap switching between Catalog, Cart, Admin POS, and Settings.
+            - **Live Cart Badge Counter**: Real-time visual count of active items in cart.
+            - **Custom DXN Icon Suite**: Brand-new custom vector adaptive launcher icons.
+            - **Performance & Polish**: Optimized Jetpack Compose state flows and offline catalog persistence.
+          files: release-assets/*.apk
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
