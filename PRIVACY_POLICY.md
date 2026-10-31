@@ -25,3 +25,4 @@ DXN Stockpoint operates on a local-first architecture:
 For inquiries, source code, or customization support:
 - GitHub: [https://github.com/abraar05/dxn-stockpoint](https://github.com/abraar05/dxn-stockpoint)
 - Releases & Updates: [https://github.com/abraar05/dxn-stockpoint/releases](https://github.com/abraar05/dxn-stockpoint/releases)
+

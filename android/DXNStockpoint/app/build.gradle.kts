@@ -21,11 +21,9 @@ android {
             val keystoreFile = project.rootProject.file("release.keystore")
             if (keystoreFile.exists()) {
                 storeFile = keystoreFile
-                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "android"
-                keyAlias = System.getenv("KEY_ALIAS") ?: "androiddebugkey"
-                keyPassword = System.getenv("KEY_PASSWORD") ?: "android"
-            } else {
-                initWith(getByName("debug"))
+                storePassword = System.getenv("KEYSTORE_PASSWORD") ?: "dxnstockpoint"
+                keyAlias = System.getenv("KEY_ALIAS") ?: "dxnkey"
+                keyPassword = System.getenv("KEY_PASSWORD") ?: "dxnstockpoint"
             }
         }
     }
@@ -33,7 +31,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            signingConfig = signingConfigs.getByName("release")
+            val keystoreFile = project.rootProject.file("release.keystore")
+            if (keystoreFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
