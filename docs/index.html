@@ -1,0 +1,865 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DXN Stockpoint — POS & Ordering System</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --forest-green: #054A29;
+      --emerald-green: #0A723D;
+      --light-green: #E2EBE4;
+      --accent-gold: #B8860B;
+      --bg-page: #F0F4F1;
+      --dark-text: #1C3322;
+      --card-bg: rgba(255, 255, 255, 0.88);
+      --card-border: rgba(255, 255, 255, 0.6);
+      --shadow-soft: 0 10px 30px rgba(5, 74, 41, 0.08);
+      --wa-color: #25D366;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--dark-text);
+      line-height: 1.5;
+      padding-bottom: 90px;
+    }
+
+    /* Top Navbar */
+    header {
+      background: var(--forest-green);
+      color: white;
+      padding: 1rem 1.5rem;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+    }
+    .header-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo-area h1 {
+      font-size: 1.35rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .logo-area p {
+      font-size: 0.75rem;
+      opacity: 0.85;
+    }
+    .nav-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+    .btn-download-apk {
+      background: #ffffff;
+      color: var(--forest-green);
+      font-weight: 700;
+      padding: 0.55rem 1rem;
+      border-radius: 999px;
+      text-decoration: none;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      transition: all 0.2s ease;
+    }
+    .btn-download-apk:hover {
+      background: var(--light-green);
+      transform: translateY(-2px);
+    }
+    .btn-cart-nav {
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.25);
+      color: white;
+      padding: 0.55rem 0.9rem;
+      border-radius: 999px;
+      cursor: pointer;
+      font-weight: 600;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    .cart-pill {
+      background: #D32F2F;
+      color: white;
+      border-radius: 999px;
+      padding: 0.1rem 0.45rem;
+      font-size: 0.75rem;
+      font-weight: 800;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1200px;
+      margin: 1.5rem auto;
+      padding: 0 1rem;
+    }
+
+    /* Hero Banner */
+    .hero-banner {
+      background: linear-gradient(135deg, #054A29 0%, #0A723D 100%);
+      color: white;
+      border-radius: 24px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+      box-shadow: var(--shadow-soft);
+    }
+    .hero-text h2 {
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 0.5rem;
+    }
+    .hero-text p {
+      font-size: 0.95rem;
+      opacity: 0.9;
+      max-width: 600px;
+    }
+    .hero-badges {
+      display: flex;
+      gap: 0.75rem;
+      flex-wrap: wrap;
+      margin-top: 1rem;
+    }
+    .badge {
+      background: rgba(255,255,255,0.18);
+      backdrop-filter: blur(8px);
+      padding: 0.35rem 0.8rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+    }
+    .hero-actions {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .btn-hero-primary {
+      background: #ffffff;
+      color: var(--forest-green);
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 0.9rem 1.6rem;
+      border-radius: 16px;
+      text-decoration: none;
+      text-align: center;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+      transition: transform 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-hero-primary:hover {
+      transform: translateY(-2px);
+    }
+
+    /* Tabs & Controls */
+    .controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .search-box {
+      flex: 1;
+      min-width: 260px;
+      position: relative;
+    }
+    .search-box input {
+      width: 100%;
+      padding: 0.85rem 1rem 0.85rem 2.6rem;
+      border-radius: 16px;
+      border: 1px solid #d1ded5;
+      background: white;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .search-box input:focus {
+      border-color: var(--emerald-green);
+    }
+    .search-icon {
+      position: absolute;
+      left: 0.9rem;
+      top: 50%;
+      transform: translateY(-50%);
+      opacity: 0.5;
+    }
+
+    .category-pills {
+      display: flex;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+    }
+    .category-pill {
+      background: white;
+      border: 1px solid #d1ded5;
+      color: var(--dark-text);
+      padding: 0.6rem 1.1rem;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.2s;
+    }
+    .category-pill.active {
+      background: var(--forest-green);
+      color: white;
+      border-color: var(--forest-green);
+    }
+
+    /* Pricing Mode Toggle */
+    .pricing-toggle-card {
+      background: white;
+      border: 1px solid #d1ded5;
+      border-radius: 16px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .toggle-info h4 {
+      font-size: 0.95rem;
+      font-weight: 700;
+    }
+    .toggle-info p {
+      font-size: 0.8rem;
+      color: #666;
+    }
+    .switch-ui {
+      position: relative;
+      display: inline-block;
+      width: 50px;
+      height: 28px;
+    }
+    .switch-ui input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background-color: #ccc;
+      transition: .3s;
+      border-radius: 28px;
+    }
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 20px;
+      width: 20px;
+      left: 4px;
+      bottom: 4px;
+      background-color: white;
+      transition: .3s;
+      border-radius: 50%;
+    }
+    input:checked + .slider {
+      background-color: var(--forest-green);
+    }
+    input:checked + .slider:before {
+      transform: translateX(22px);
+    }
+
+    /* Product Grid */
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.25rem;
+    }
+    .product-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 24px;
+      padding: 1.25rem;
+      box-shadow: var(--shadow-soft);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+    .product-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 16px 36px rgba(5, 74, 41, 0.12);
+    }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.75rem;
+    }
+    .card-category {
+      font-size: 0.7rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--emerald-green);
+    }
+    .card-badges {
+      display: flex;
+      gap: 0.4rem;
+      align-items: center;
+    }
+    .badge-pv {
+      background: var(--light-green);
+      color: var(--forest-green);
+      font-weight: 800;
+      font-size: 0.75rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 8px;
+    }
+    .badge-stock {
+      font-weight: 700;
+      font-size: 0.7rem;
+      padding: 0.2rem 0.55rem;
+      border-radius: 8px;
+      color: white;
+    }
+    .badge-stock.in-stock { background: var(--emerald-green); }
+    .badge-stock.low-stock { background: #D32F2F; }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--dark-text);
+    }
+
+    .card-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+    .price-block .price-primary {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--forest-green);
+    }
+    .price-block .price-secondary {
+      font-size: 0.75rem;
+      color: #777;
+      text-decoration: line-through;
+    }
+    .btn-add {
+      background: var(--forest-green);
+      color: white;
+      border: none;
+      padding: 0.55rem 1rem;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      transition: background 0.2s;
+    }
+    .btn-add:hover {
+      background: var(--emerald-green);
+    }
+    .btn-add:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+
+    /* Modal / Drawer for Cart */
+    .cart-drawer-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.5);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: none;
+    }
+    .cart-drawer-overlay.open { display: block; }
+
+    .cart-drawer {
+      position: fixed;
+      top: 0; right: 0; bottom: 0;
+      width: 100%;
+      max-width: 440px;
+      background: #fff;
+      z-index: 210;
+      display: flex;
+      flex-direction: column;
+      box-shadow: -10px 0 30px rgba(0,0,0,0.2);
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .cart-drawer.open { transform: translateX(0); }
+
+    .drawer-header {
+      background: var(--forest-green);
+      color: white;
+      padding: 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .drawer-header h3 { font-size: 1.15rem; font-weight: 800; }
+    .btn-close-drawer {
+      background: transparent;
+      border: none;
+      color: white;
+      font-size: 1.4rem;
+      cursor: pointer;
+    }
+
+    .drawer-body {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .cart-item-row {
+      background: #fafafa;
+      border: 1px solid #e6e6e6;
+      border-radius: 14px;
+      padding: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .cart-item-info h5 { font-size: 0.95rem; font-weight: 700; margin-bottom: 0.2rem; }
+    .cart-item-info p { font-size: 0.8rem; color: var(--forest-green); font-weight: 700; }
+
+    .qty-stepper {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .btn-step {
+      width: 28px;
+      height: 28px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+      background: white;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .drawer-footer {
+      border-top: 1px solid #eee;
+      padding: 1.25rem;
+      background: #fafafa;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.95rem;
+    }
+    .summary-total {
+      font-size: 1.2rem;
+      font-weight: 800;
+      color: var(--forest-green);
+    }
+    .customer-input {
+      width: 100%;
+      padding: 0.75rem 0.9rem;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      font-size: 0.9rem;
+      outline: none;
+    }
+    .btn-wa-checkout {
+      background: var(--wa-color);
+      color: white;
+      font-weight: 800;
+      font-size: 1rem;
+      padding: 0.9rem;
+      border: none;
+      border-radius: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      box-shadow: 0 4px 14px rgba(37, 211, 102, 0.4);
+    }
+
+    /* Floating APK Download Pill on Mobile */
+    .mobile-float-bar {
+      position: fixed;
+      bottom: 1rem;
+      left: 1rem;
+      right: 1rem;
+      background: #111;
+      color: white;
+      border-radius: 999px;
+      padding: 0.75rem 1.25rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      z-index: 90;
+    }
+    .mobile-float-bar span {
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+    .btn-float-apk {
+      background: #25D366;
+      color: #000;
+      font-weight: 800;
+      font-size: 0.85rem;
+      padding: 0.45rem 0.9rem;
+      border-radius: 999px;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header -->
+  <header>
+    <div class="header-content">
+      <div class="logo-area">
+        <h1>☕ DXN Stockpoint</h1>
+        <p>Zero-Cost POS & Instant WhatsApp Order Engine</p>
+      </div>
+      <div class="nav-actions">
+        <a class="btn-download-apk" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v1.0.0/dxn-stockpoint-v1.0.0.apk">
+          ⬇️ Install APK
+        </a>
+        <button class="btn-cart-nav" onclick="openCart()">
+          🛒 Cart <span class="cart-pill" id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <div class="container">
+    <!-- Hero Banner -->
+    <div class="hero-banner">
+      <div class="hero-text">
+        <h2>DXN Stockpoint is Live & Running! 🚀</h2>
+        <p>Order DXN authentic coffees, Ganoderma health supplements, and personal care directly with live PV tracking and instant WhatsApp verification.</p>
+        <div class="hero-badges">
+          <span class="badge">📱 Native Android App (v1.0.0)</span>
+          <span class="badge">⚡ Zero-Cost Cloud Engine</span>
+          <span class="badge">📲 Free WhatsApp Ordering</span>
+        </div>
+      </div>
+      <div class="hero-actions">
+        <a class="btn-hero-primary" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v1.0.0/dxn-stockpoint-v1.0.0.apk">
+          <span>📲</span> Download Android App (APK)
+        </a>
+      </div>
+    </div>
+
+    <!-- Controls Row: Search & Categories -->
+    <div class="controls-row">
+      <div class="search-box">
+        <span class="search-icon">🔍</span>
+        <input type="text" id="searchInput" placeholder="Search DXN products by name or category..." oninput="renderProducts()">
+      </div>
+      <div class="category-pills" id="categoryTabs">
+        <button class="category-pill active" onclick="setCategory('All')">All Products</button>
+        <button class="category-pill" onclick="setCategory('Coffee')">☕ Coffee</button>
+        <button class="category-pill" onclick="setCategory('Supplements')">🌿 Supplements</button>
+        <button class="category-pill" onclick="setCategory('Personal Care')">✨ Personal Care</button>
+      </div>
+    </div>
+
+    <!-- Pricing Mode Switch -->
+    <div class="pricing-toggle-card">
+      <div class="toggle-info">
+        <h4>DXN Member Pricing Mode</h4>
+        <p id="pricingModeLabel">Switch between official Member and Retail rates.</p>
+      </div>
+      <label class="switch-ui">
+        <input type="checkbox" id="memberSwitch" onchange="togglePricingMode()">
+        <span class="slider"></span>
+      </label>
+    </div>
+
+    <!-- Products Grid -->
+    <div class="product-grid" id="productGrid">
+      <!-- Injected via JavaScript -->
+    </div>
+  </div>
+
+  <!-- Cart Drawer -->
+  <div class="cart-drawer-overlay" id="drawerOverlay" onclick="closeCart()"></div>
+  <div class="cart-drawer" id="cartDrawer">
+    <div class="drawer-header">
+      <h3>Your Cart 🛍️</h3>
+      <button class="btn-close-drawer" onclick="closeCart()">✕</button>
+    </div>
+    <div class="drawer-body" id="drawerItems">
+      <!-- Items dynamically injected -->
+    </div>
+    <div class="drawer-footer">
+      <div class="summary-line">
+        <span>Total PV Points:</span>
+        <strong id="summaryPV" style="color: var(--emerald-green);">0.0 PV</strong>
+      </div>
+      <div class="summary-line">
+        <span>Total Amount:</span>
+        <span class="summary-total" id="summaryTotal">৳ 0.00</span>
+      </div>
+      <input type="text" id="custNameInput" class="customer-input" placeholder="Your Name *">
+      <input type="text" id="memberIdInput" class="customer-input" placeholder="DXN Member ID (optional)">
+      <button class="btn-wa-checkout" onclick="checkoutWhatsApp()">
+        📱 Confirm & Send via WhatsApp
+      </button>
+    </div>
+  </div>
+
+  <!-- Mobile Floating Download Bar -->
+  <div class="mobile-float-bar">
+    <span>Get the Android App</span>
+    <a class="btn-float-apk" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v1.0.0/dxn-stockpoint-v1.0.0.apk">
+      Download APK (17MB)
+    </a>
+  </div>
+
+  <script>
+    const PRODUCTS = [
+      { id: 1, sku: 'DXN-LZC-3IN1-20', name: 'Lingzhi Coffee 3-in-1', category: 'Coffee', retailPrice: 45.0, memberPrice: 35.0, pvPoints: 24.0, stockQty: 120 },
+      { id: 2, sku: 'DXN-LZC-2IN1-20', name: 'Lingzhi Coffee 2-in-1', category: 'Coffee', retailPrice: 42.0, memberPrice: 33.0, pvPoints: 22.0, stockQty: 80 },
+      { id: 3, sku: 'DXN-ZHI-MOCHA-20', name: 'Zhi Mocha', category: 'Coffee', retailPrice: 50.0, memberPrice: 40.0, pvPoints: 26.0, stockQty: 60 },
+      { id: 4, sku: 'DXN-LZC-LITE-20', name: 'Lingzhi Coffee Lite', category: 'Coffee', retailPrice: 40.0, memberPrice: 31.0, pvPoints: 20.0, stockQty: 55 },
+      { id: 5, sku: 'DXN-RGGL-90', name: 'RG/GL Capsules (90s)', category: 'Supplements', retailPrice: 220.0, memberPrice: 170.0, pvPoints: 115.0, stockQty: 40 },
+      { id: 6, sku: 'DXN-MORINZHI-500', name: 'Morinzhi (500ml)', category: 'Supplements', retailPrice: 90.0, memberPrice: 70.0, pvPoints: 46.0, stockQty: 30 },
+      { id: 7, sku: 'DXN-SPIRULINA-120', name: 'Spirulina Tablets (120s)', category: 'Supplements', retailPrice: 75.0, memberPrice: 58.0, pvPoints: 38.0, stockQty: 50 },
+      { id: 8, sku: 'DXN-ANDRO-90', name: 'Andrographis Paniculata (90s)', category: 'Supplements', retailPrice: 65.0, memberPrice: 50.0, pvPoints: 33.0, stockQty: 35 },
+      { id: 9, sku: 'DXN-LZC-TEA-25', name: 'Lingzhi Black Tea', category: 'Coffee', retailPrice: 38.0, memberPrice: 29.0, pvPoints: 19.0, stockQty: 3 },
+      { id: 10, sku: 'DXN-TOOTHPASTE-120', name: 'Ganozhi Toothpaste (120g)', category: 'Personal Care', retailPrice: 28.0, memberPrice: 22.0, pvPoints: 14.0, stockQty: 75 },
+      { id: 11, sku: 'DXN-SOAP-GANO', name: 'Ganozhi Soap', category: 'Personal Care', retailPrice: 18.0, memberPrice: 14.0, pvPoints: 9.0, stockQty: 2 },
+      { id: 12, sku: 'DXN-SHAMPOO-GANO', name: 'Ganozhi Shampoo (200ml)', category: 'Personal Care', retailPrice: 35.0, memberPrice: 27.0, pvPoints: 17.0, stockQty: 25 }
+    ];
+
+    let currentCategory = 'All';
+    let isMemberMode = true; // default to member pricing
+    let cart = {}; // id -> quantity
+    const WA_PHONE = '8801987851131';
+
+    document.getElementById('memberSwitch').checked = isMemberMode;
+
+    function setCategory(cat) {
+      currentCategory = cat;
+      document.querySelectorAll('.category-pill').forEach(btn => {
+        btn.classList.toggle('active', btn.textContent.includes(cat) || (cat === 'All' && btn.textContent.includes('All')));
+      });
+      renderProducts();
+    }
+
+    function togglePricingMode() {
+      isMemberMode = document.getElementById('memberSwitch').checked;
+      document.getElementById('pricingModeLabel').textContent = isMemberMode
+        ? "Member pricing applied (Official DXN Partner rates)"
+        : "Standard retail pricing applied";
+      renderProducts();
+      renderCart();
+    }
+
+    function renderProducts() {
+      const q = document.getElementById('searchInput').value.toLowerCase();
+      const grid = document.getElementById('productGrid');
+      grid.innerHTML = '';
+
+      const filtered = PRODUCTS.filter(p => {
+        const matchesCat = currentCategory === 'All' || p.category.toLowerCase() === currentCategory.toLowerCase();
+        const matchesQuery = p.name.toLowerCase().includes(q) || p.sku.toLowerCase().includes(q) || p.category.toLowerCase().includes(q);
+        return matchesCat && matchesQuery;
+      });
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 3rem; color: #888;">No DXN products matching your search.</div>`;
+        return;
+      }
+
+      filtered.forEach(p => {
+        const isOutOfStock = p.stockQty === 0;
+        const isLow = p.stockQty < 5;
+        const price = isMemberMode ? p.memberPrice : p.retailPrice;
+        const strikePrice = isMemberMode ? p.retailPrice : null;
+
+        const card = document.createElement('div');
+        card.className = 'product-card';
+        card.innerHTML = `
+          <div>
+            <div class="card-top">
+              <span class="card-category">${p.category}</span>
+              <div class="card-badges">
+                <span class="badge-stock ${isLow ? 'low-stock' : 'in-stock'}">${isOutOfStock ? 'Out of stock' : p.stockQty + ' in stock'}</span>
+                <span class="badge-pv">PV: ${p.pvPoints}</span>
+              </div>
+            </div>
+            <h3 class="card-title">${p.name}</h3>
+          </div>
+          <div class="card-bottom">
+            <div class="price-block">
+              <div class="price-primary">৳ ${price.toFixed(2)}</div>
+              ${strikePrice ? `<div class="price-secondary">Retail: ৳ ${strikePrice.toFixed(2)}</div>` : ''}
+            </div>
+            <button class="btn-add" onclick="addToCart(${p.id})" ${isOutOfStock ? 'disabled' : ''}>
+              + Add
+            </button>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+    }
+
+    function addToCart(id) {
+      cart[id] = (cart[id] || 0) + 1;
+      updateCartBadge();
+    }
+
+    function updateCartBadge() {
+      const count = Object.values(cart).reduce((a, b) => a + b, 0);
+      document.getElementById('cartCount').textContent = count;
+    }
+
+    function openCart() {
+      renderCart();
+      document.getElementById('cartDrawer').classList.add('open');
+      document.getElementById('drawerOverlay').classList.add('open');
+    }
+
+    function closeCart() {
+      document.getElementById('cartDrawer').classList.remove('open');
+      document.getElementById('drawerOverlay').classList.remove('open');
+    }
+
+    function changeQty(id, delta) {
+      if (cart[id]) {
+        cart[id] += delta;
+        if (cart[id] <= 0) delete cart[id];
+      }
+      updateCartBadge();
+      renderCart();
+    }
+
+    function renderCart() {
+      const itemsContainer = document.getElementById('drawerItems');
+      itemsContainer.innerHTML = '';
+      const entries = Object.entries(cart);
+
+      if (entries.length === 0) {
+        itemsContainer.innerHTML = `<div style="text-align: center; margin: 3rem auto; color: #888;">🛒 Your cart is currently empty.</div>`;
+        document.getElementById('summaryTotal').textContent = '৳ 0.00';
+        document.getElementById('summaryPV').textContent = '0.0 PV';
+        return;
+      }
+
+      let totalAmount = 0;
+      let totalPV = 0;
+
+      entries.forEach(([idStr, qty]) => {
+        const p = PRODUCTS.find(x => x.id === parseInt(idStr));
+        if (!p) return;
+        const price = isMemberMode ? p.memberPrice : p.retailPrice;
+        const itemTotal = price * qty;
+        totalAmount += itemTotal;
+        totalPV += p.pvPoints * qty;
+
+        const row = document.createElement('div');
+        row.className = 'cart-item-row';
+        row.innerHTML = `
+          <div class="cart-item-info">
+            <h5>${p.name}</h5>
+            <p>৳ ${price.toFixed(2)} × ${qty} = ৳ ${itemTotal.toFixed(2)}</p>
+          </div>
+          <div class="qty-stepper">
+            <button class="btn-step" onclick="changeQty(${p.id}, -1)">-</button>
+            <span><strong>${qty}</strong></span>
+            <button class="btn-step" onclick="changeQty(${p.id}, 1)">+</button>
+          </div>
+        `;
+        itemsContainer.appendChild(row);
+      });
+
+      document.getElementById('summaryTotal').textContent = `৳ ${totalAmount.toFixed(2)}`;
+      document.getElementById('summaryPV').textContent = `${totalPV.toFixed(1)} PV`;
+    }
+
+    function checkoutWhatsApp() {
+      const name = document.getElementById('custNameInput').value.trim() || 'Valued Customer';
+      const memberId = document.getElementById('memberIdInput').value.trim();
+      const entries = Object.entries(cart);
+
+      if (entries.length === 0) {
+        alert("Your cart is empty! Please add items before checking out.");
+        return;
+      }
+
+      let totalAmount = 0;
+      let totalPV = 0;
+      let lines = [];
+
+      entries.forEach(([idStr, qty]) => {
+        const p = PRODUCTS.find(x => x.id === parseInt(idStr));
+        if (!p) return;
+        const price = isMemberMode ? p.memberPrice : p.retailPrice;
+        const itemTotal = price * qty;
+        totalAmount += itemTotal;
+        totalPV += p.pvPoints * qty;
+        lines.push(`• ${p.name} (x${qty}) = BDT ${itemTotal.toFixed(2)}`);
+      });
+
+      const memberTag = memberId ? `Member ID: ${memberId}` : (isMemberMode ? 'DXN Member' : 'Guest / Retail');
+
+      const msg = `🛒 *DXN STOCKPOINT ORDER*
+━━━━━━━━━━━━━━━━━━━━━━━━
+👤 *Customer:* ${name}
+🆔 *Type:* ${memberTag}
+💳 *Pricing:* ${isMemberMode ? 'Member Rate' : 'Retail Rate'}
+━━━━━━━━━━━━━━━━━━━━━━━━
+*Items:*
+${lines.join('\n')}
+━━━━━━━━━━━━━━━━━━━━━━━━
+⭐ *Total PV:* ${totalPV.toFixed(1)} PV
+💰 *Total Amount:* BDT ${totalAmount.toFixed(2)}
+
+Please confirm order availability and dispatch details. Thank you! 🙏`;
+
+      const encoded = encodeURIComponent(msg);
+      window.open(`https://api.whatsapp.com/send?phone=${WA_PHONE}&text=${encoded}`, '_blank');
+    }
+
+    renderProducts();
+  </script>
+</body>
+</html>
