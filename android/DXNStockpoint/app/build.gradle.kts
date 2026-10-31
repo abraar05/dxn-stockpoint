@@ -12,15 +12,19 @@ android {
         applicationId = "com.dxn.stockpoint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 3
-        versionName = "2.0.0"
+        versionCode = 4
+        versionName = "2.0.1"
     }
 
-    // The release keystore is supplied by CI (or a local keystore.properties).
-    // Without it the release build stays unsigned instead of failing the run.
+    // The release keystore comes from CI (env vars) or a local
+    // android/DXNStockpoint/release.keystore. Without either, the release
+    // APK/AAB is simply left unsigned instead of failing the build.
     signingConfigs {
         create("release") {
-            val storePath = System.getenv("DXN_KEYSTORE") ?: ""
+            val storePath = System.getenv("DXN_KEYSTORE")
+                ?: project.rootProject.file("release.keystore")
+                    .takeIf { it.exists() }?.absolutePath
+                ?: ""
             if (storePath.isNotEmpty() && file(storePath).exists()) {
                 storeFile = file(storePath)
                 storePassword = System.getenv("DXN_KEYSTORE_PASSWORD") ?: ""
@@ -33,15 +37,11 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
-            val keystoreFile = project.rootProject.file("release.keystore")
-            if (keystoreFile.exists()) {
-                signingConfig = signingConfigs.getByName("release")
-            }
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             val releaseConfig = signingConfigs.getByName("release")
             if (releaseConfig.storeFile != null) {
                 signingConfig = releaseConfig
             }
+            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
         }
     }
 

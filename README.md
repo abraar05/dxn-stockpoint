@@ -1,4 +1,4 @@
-# DXN Stockpoint v2.0 🛒
+# DXN Stockpoint v2.0.1 🛒
 
 An offline-first stockpoint POS for DXN distributors — **one PHP API, two clients
 that stay in sync**: an installable web app and a native Android app. Everything
@@ -8,8 +8,9 @@ runs on free, forever tiers: GitHub Pages, GitHub Releases, InfinityFree
 | | |
 |---|---|
 | 🌐 Web app | https://abraar05.github.io/dxn-stockpoint/ |
-| 📱 Android | GitHub Releases → `dxn-stockpoint-2.0.0-debug.apk` |
+| 📱 Android | GitHub Releases → `dxn-stockpoint-2.0.1-debug.apk` |
 | 🔌 API | InfinityFree — `https://<your-site>/api/v1/...` |
+| 🔒 Privacy | https://abraar05.github.io/dxn-stockpoint/privacy.html |
 
 ---
 

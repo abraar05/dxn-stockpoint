@@ -5,11 +5,12 @@
  * responses (different origin) so sync always talks to the real server.
  */
 
-const VERSION = 'dxn-stockpoint-2.0.0';
+const VERSION = 'dxn-stockpoint-2.0.1';
 const SHELL = [
   './',
   './index.html',
   './manifest.webmanifest',
+  './privacy.html',
   './css/app.css',
   './js/app.js',
   './js/api.js',

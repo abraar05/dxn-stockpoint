@@ -157,10 +157,13 @@ catalogue.
 
 `build.yml` runs on every push that touches `android/`. It produces:
 
-- `dxn-stockpoint-2.0.0-debug.apk` — sideloadable, no signing setup needed
-- `dxn-stockpoint-2.0.0.aab` — for Google Play
+- `dxn-stockpoint-2.0.1-debug.apk` — sideloadable, no signing setup needed
+- `dxn-stockpoint-2.0.1.aab` — for Google Play
 
-Both are attached to the **v2.0.0** GitHub Release.
+Both are attached to the **v2.0.1** GitHub Release.
+
+> `v2.0.0` on this repo predates the PHP API rewrite and is kept only as
+> history. Ship `v2.0.1` — `versionCode 4` — from here on.
 
 ### Signed release (Play Store)
 
@@ -176,15 +179,19 @@ Both are attached to the **v2.0.0** GitHub Release.
 3. Add secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
    `ANDROID_KEY_ALIAS` (`dxn`), `ANDROID_KEY_PASSWORD`.
 
-4. Push a tag: `git tag v2.0.0; git push origin v2.0.0`
+4. Push a tag: `git tag v2.0.1; git push origin v2.0.1`
 
 ### Google Play
 
-1. Play Console → **Create app** → upload `dxn-stockpoint-2.0.0.aab`.
+1. Play Console → **Create app** → upload `dxn-stockpoint-2.0.1.aab`.
 2. Store listing needs: 512×512 icon, 1024×500 feature graphic, 2+ screenshots,
-   short + full description, privacy policy URL.
-3. Data safety: the app stores customer name/phone locally and sends them to
-   *your* server only; declare "collected – order management", not shared.
+   short + full description, and a privacy policy URL — use
+   <https://abraar05.github.io/dxn-stockpoint/privacy.html>
+   (source: [`PRIVACY_POLICY.md`](../PRIVACY_POLICY.md)).
+3. Data safety: no analytics, no ads, no third-party SDKs. Declare *collected –
+   order management* for customer name/phone (optional fields the shopkeeper
+   types in), transmitted to **the shop's own server**; not shared with third
+   parties. Nothing else is collected.
 4. Internal testing first, then production.
 
 ### Local build

@@ -191,6 +191,10 @@ function aboutCard() {
           <div class="list__title">Backend</div>
           <div class="list__sub">PHP 8 + MySQL on InfinityFree (free forever)</div></div>
           <a class="btn btn--sm btn--ghost" href="${esc(getBase())}/api/v1/health" target="_blank" rel="noopener">Health</a></div>
+        <div class="list__row"><div class="list__main">
+          <div class="list__title">Privacy</div>
+          <div class="list__sub">What is stored, where it goes, how to delete it</div></div>
+          <a class="btn btn--sm btn--ghost" href="privacy.html" target="_blank" rel="noopener">Read</a></div>
       </div>
       <p style="font-size:11.5px;color:var(--faint);margin-top:12px">
         Built to run on free tiers: GitHub Pages for the web, GitHub Releases for the APK,
