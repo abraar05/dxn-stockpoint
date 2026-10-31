@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>DXN Stockpoint — Enterprise POS & Order Management</title>
+  <meta name="theme-color" content="#054A29">
+  <meta name="description" content="Production-grade POS, inventory management, and instant WhatsApp ordering suite for DXN Stockpoints.">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/png" href="icon-192.png">
+  <link rel="apple-touch-icon" href="icon-192.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Mono:wght@700&display=swap" rel="stylesheet">
@@ -732,7 +737,7 @@
         <div class="brand-icon">🌿</div>
         <div class="brand-text">
           <h1>DXN Stockpoint</h1>
-          <span>POS & Order Engine • v1.1.0</span>
+          <span>POS & Order Engine • v2.0.0</span>
         </div>
       </a>
       <div class="header-nav">
@@ -743,8 +748,8 @@
         <button class="nav-btn" onclick="openCart()">
           🛒 Cart <span id="cartCountBadge" style="background:#EF4444; color:white; border-radius:999px; padding:0.1rem 0.45rem; font-size:0.75rem; font-weight:800; margin-left:0.2rem;">0</span>
         </button>
-        <a class="btn-download-top" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v1.1.0/dxn-stockpoint-v1.1.0.apk">
-          ⬇️ Install APK v1.1.0
+        <a class="btn-download-top" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-v2.0.0.apk">
+          ⬇️ Install APK v2.0.0
         </a>
       </div>
     </div>
@@ -757,15 +762,15 @@
         <h2>DXN Stockpoint Enterprise POS 🚀</h2>
         <p>Production-grade Point of Sale, live PV point tracking, member vs retail margin optimization, and zero-cost instant WhatsApp order processing.</p>
         <div class="hero-tags">
-          <span class="hero-tag">📱 Android Native v1.1.0 (Live)</span>
+          <span class="hero-tag">📱 Android Native v2.0.0 (Live)</span>
           <span class="hero-tag">⚡ GitHub Pages Web App</span>
           <span class="hero-tag">📲 Direct WhatsApp Checkout</span>
           <span class="hero-tag">🧾 Auto Thermal Receipts</span>
         </div>
       </div>
       <div class="hero-action-box">
-        <a class="btn-hero-apk" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v1.1.0/dxn-stockpoint-v1.1.0.apk">
-          <span>📲</span> Download APK (v1.1.0)
+        <a class="btn-hero-apk" href="https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-v2.0.0.apk">
+          <span>📲</span> Download APK (v2.0.0)
         </a>
         <small style="text-align: center; opacity: 0.85;">Official signed Android package • 17 MB</small>
       </div>
@@ -1530,6 +1535,12 @@ Please confirm dispatch availability & payment receipt. Thank you! 🙏`;
       settings.serverUrl = document.getElementById('settingServerUrl').value.trim();
       saveState();
       showToast("Stockpoint settings saved successfully!");
+    }
+
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').catch(() => {});
+      });
     }
 
     renderCatalog();

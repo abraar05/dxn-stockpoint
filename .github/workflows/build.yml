@@ -1,4 +1,4 @@
-name: Build & Release Android APK
+name: Build & Release Production App
 
 on:
   push:
@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   build:
-    name: Build & Release APK
+    name: Build Production Release (APK & AAB)
     runs-on: ubuntu-latest
 
     steps:
@@ -29,44 +29,61 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x android/DXNStockpoint/gradlew
 
-      - name: Build Debug APK
+      - name: Build Release APK and App Bundle (AAB)
         working-directory: android/DXNStockpoint
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: |
+          ./gradlew assembleRelease bundleRelease --no-daemon --stacktrace
 
-      - name: Prepare APK for Release
+      - name: Package Release Assets
         run: |
           mkdir -p release-assets
-          cp android/DXNStockpoint/app/build/outputs/apk/debug/*.apk release-assets/dxn-stockpoint-v1.1.0.apk
-          cp release-assets/dxn-stockpoint-v1.1.0.apk release-assets/dxn-stockpoint-latest.apk
+          find android/DXNStockpoint/app/build/outputs/apk/release/ -name "*.apk" -exec cp {} release-assets/dxn-stockpoint-v2.0.0.apk \;
+          find android/DXNStockpoint/app/build/outputs/bundle/release/ -name "*.aab" -exec cp {} release-assets/dxn-stockpoint-v2.0.0.aab \;
+          cp release-assets/dxn-stockpoint-v2.0.0.apk release-assets/dxn-stockpoint-latest.apk
 
-      - name: Upload Artifact
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: DXN-Stockpoint-v1.1.0-APK
-          path: release-assets/*.apk
+          name: DXN-Stockpoint-v2.0.0-Release-Assets
+          path: release-assets/*
           retention-days: 30
 
-      - name: Publish to GitHub Releases
+      - name: Publish Production Release (v2.0.0)
         uses: softprops/action-gh-release@v2
         if: github.ref == 'refs/heads/main'
         with:
-          tag_name: v1.1.0
-          name: "DXN Stockpoint v1.1.0 — Production Android Release"
+          tag_name: v2.0.0
+          name: "DXN Stockpoint v2.0.0 — Production Launch"
           body: |
-            ## DXN Stockpoint Mobile POS & Ordering System (v1.1.0) 📱🛒
+            # 🚀 DXN Stockpoint Production Release (v2.0.0)
 
-            Production-grade native Android app featuring bottom navigation bar, live PV computation, dual-tier pricing (Member & Retail), stock controls, and direct WhatsApp checkout.
-
-            ### ⬇️ Direct Download Link
-            👉 **[dxn-stockpoint-v1.1.0.apk](https://github.com/abraar05/dxn-stockpoint/releases/download/v1.1.0/dxn-stockpoint-v1.1.0.apk)**
+            Complete, production-ready POS, inventory management, and ordering suite for DXN stockpoints and distributors worldwide.
 
             ---
-            ### 🌟 Key Upgrades in v1.1.0:
-            - **Persistent Bottom Navigation**: Seamless 1-tap switching between Catalog, Cart, Admin POS, and Settings.
-            - **Live Cart Badge Counter**: Real-time visual count of active items in cart.
-            - **Custom DXN Icon Suite**: Brand-new custom vector adaptive launcher icons.
-            - **Performance & Polish**: Optimized Jetpack Compose state flows and offline catalog persistence.
-          files: release-assets/*.apk
+
+            ### 📦 Distribution Packages:
+            * 📱 **Universal Release APK (Install Directly):**
+              👉 **[dxn-stockpoint-v2.0.0.apk](https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-v2.0.0.apk)** *(or [latest alias](https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-latest.apk))*
+            * 🛍️ **Google Play App Bundle (Play Store Submission):**
+              👉 **[dxn-stockpoint-v2.0.0.aab](https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-v2.0.0.aab)**
+
+            ---
+
+            ### 🌟 Key Production Capabilities:
+            1. **Dual Native & Web Deployment**:
+               - Native Android 8.0+ app built with Kotlin 2.0 & Jetpack Compose.
+               - Progressive Web App (PWA) live on [GitHub Pages](https://abraar05.github.io/dxn-stockpoint/).
+            2. **Official DXN Dual-Pricing**:
+               - Real-time switching between official DXN Partner Member and Retail rates with profit margin transparency.
+            3. **Multi-Currency Global Support**:
+               - Supports BDT (৳), USD ($), MYR (RM), EUR (€), and AED (د.إ).
+            4. **Automated Thermal Invoicing**:
+               - POS thermal receipts with date, customer ID, itemized breakdowns, and 1-click print support.
+            5. **Direct Zero-Cost WhatsApp Integration**:
+               - Deep-link order generation directly to WhatsApp (`+8801987851131`) with no paid API keys required.
+            6. **Offline-First Resilience**:
+               - Local catalog caching and SQLite/LocalStorage synchronization.
+          files: release-assets/*
           draft: false
           prerelease: false
         env:

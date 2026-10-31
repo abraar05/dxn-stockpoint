@@ -1,49 +1,57 @@
-# DXN Stockpoint 🛒
+# 🌿 DXN Stockpoint — Enterprise POS & Order Management Suite
 
-A zero-cost, offline-first POS and order management system for DXN stockpoints.
+[![Build & Release Production App](https://github.com/abraar05/dxn-stockpoint/actions/workflows/build.yml/badge.svg)](https://github.com/abraar05/dxn-stockpoint/actions/workflows/build.yml)
+[![Latest Release](https://img.shields.io/github/v/release/abraar05/dxn-stockpoint?color=10B981&label=Production%20Release)](https://github.com/abraar05/dxn-stockpoint/releases/latest)
+[![Live Web POS](https://img.shields.io/badge/Live%20Web%20App-GitHub%20Pages-054A29)](https://abraar05.github.io/dxn-stockpoint/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-## Stack
-- **Android App** — Kotlin + Jetpack Compose (glassmorphic UI)
-- **Backend** — Node.js + Express + SQLite (runs on local PC or free cloud)
-- **Orders** — WhatsApp deep-link checkout (free, no API key)
-- **Tunnel** — Cloudflare Tunnel / Ngrok (free HTTPS)
+A complete, zero-cost, production-grade Point of Sale (POS), inventory management, and instant WhatsApp ordering system specifically tailored for DXN stockpoints and distributors worldwide.
 
-## Quick Start
+---
 
-### Backend
-```bash
-cd backend
-npm install
-npm run seed    # Seeds 12 DXN products
-npm start       # http://localhost:3000
-```
+## 🚀 Live Access & Downloads
 
-### Android App
-Open `android/DXNStockpoint/` in **Android Studio**, sync Gradle, run on emulator or device.
+| Platform | Channel | Link |
+|---|---|---|
+| 🌐 **Web POS & Dashboard** | GitHub Pages (PWA) | 👉 [https://abraar05.github.io/dxn-stockpoint/](https://abraar05.github.io/dxn-stockpoint/) |
+| 📱 **Android Native App (v2.0.0)** | Universal `.apk` | 👉 [Download Release APK](https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-v2.0.0.apk) |
+| 🛍️ **Google Play App Bundle** | Store Submission `.aab` | 👉 [Download Release AAB](https://github.com/abraar05/dxn-stockpoint/releases/download/v2.0.0/dxn-stockpoint-v2.0.0.aab) |
+| 📦 **All Release Assets** | GitHub Releases | 👉 [View Production Releases](https://github.com/abraar05/dxn-stockpoint/releases) |
 
-> The emulator connects to `http://10.0.2.2:3000/` automatically.  
-> For a real device, set your Cloudflare/Ngrok tunnel URL in **Settings ⚙️**.
+---
 
-## APK Download
-After pushing to `main`, GitHub Actions builds the APK automatically.  
-Go to **Actions → Build & Release APK → Artifacts** to download it.
+## 🌟 Core Feature Suite
 
-## Features
-| Screen | Features |
-|--------|----------|
-| Catalog | Search, category filters, stock badges, glassmorphic cards |
-| Cart | Qty stepper, member/retail pricing toggle, WhatsApp + API checkout |
-| Admin | Dashboard stats, low-stock alerts, stock update, add product, orders |
-| Settings | Server URL, WhatsApp number |
+### 1. Dual-Tier Dynamic Pricing Engine
+* Official DXN Partner **Member Price** vs. **Retail Price** live toggle.
+* Real-time calculation of **Profit Margin** and accumulated **PV (Point Value)** for every transaction.
 
-## API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/products` | List all products |
-| POST | `/api/v1/products` | Add product |
-| PUT | `/api/v1/products/:id` | Edit product |
-| POST | `/api/v1/stock/update` | Update stock |
-| GET | `/api/v1/orders` | Order history |
-| POST | `/api/v1/orders` | Place order |
-| GET | `/api/v1/dashboard` | Stats + low-stock |
+### 2. Multi-Currency Global Support
+* Live currency switching: **BDT (৳)**, **USD ($)**, **MYR (RM)**, **EUR (€)**, and **AED (د.إ)**.
 
+### 3. POS Thermal Receipt Generator
+* Itemized invoice generation with timestamp, order number, customer name, member ID, and PV totals.
+* 1-click printable receipt output formatted for standard thermal POS printers.
+
+### 4. Zero-Cost Instant WhatsApp Dispatch
+* Automated deep-link order generator that dispatches customer orders directly to your stockpoint WhatsApp number with full itemization and pricing breakdown.
+
+### 5. Multi-Platform Architecture
+* **Android Native App**: Kotlin 2.0 + Jetpack Compose, Material 3 bottom navigation, adaptive vector icons.
+* **Progressive Web App (PWA)**: Installable directly from Chrome/Edge/Safari on mobile or desktop with offline caching via Service Worker.
+* **Local Backend API**: Node.js + Express + SQLite with order tracking, stock updates, and low-stock alerts.
+
+---
+
+## 💻 Tech Stack
+
+* **Mobile App:** Android Native (Kotlin 2.0, Jetpack Compose, Retrofit 2, OkHttp 3, Coroutines, StateFlow)
+* **Web App:** HTML5, CSS3 Glassmorphism, Modern Vanilla JS, PWA (Service Worker + Manifest)
+* **Backend:** Node.js, Express, SQLite3, RESTful API
+* **CI/CD:** GitHub Actions (automates Android Release APK & AAB builds on commit)
+
+---
+
+## 📄 Privacy Policy
+
+See [PRIVACY_POLICY.md](PRIVACY_POLICY.md) for full compliance details.
