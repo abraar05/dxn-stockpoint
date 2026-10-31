@@ -22,6 +22,10 @@ android/DXNStockpoint/.idea/
 !gradle/wrapper/gradle-wrapper.jar
 !android/DXNStockpoint/gradle/wrapper/gradle-wrapper.jar
 
+# Binaries
+*.apk
+*.aab
+
 # Node.js backend
 backend/node_modules/
 backend/dxn_stockpoint.db

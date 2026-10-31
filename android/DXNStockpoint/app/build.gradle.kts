@@ -33,6 +33,10 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+            val keystoreFile = project.rootProject.file("release.keystore")
+            if (keystoreFile.exists()) {
+                signingConfig = signingConfigs.getByName("release")
+            }
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
             val releaseConfig = signingConfigs.getByName("release")
             if (releaseConfig.storeFile != null) {
