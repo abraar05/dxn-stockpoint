@@ -1,49 +1,117 @@
-# DXN Stockpoint 🛒
+# DXN Stockpoint v2.0 🛒
 
-A zero-cost, offline-first POS and order management system for DXN stockpoints.
+An offline-first stockpoint POS for DXN distributors — **one PHP API, two clients
+that stay in sync**: an installable web app and a native Android app. Everything
+runs on free, forever tiers: GitHub Pages, GitHub Releases, InfinityFree
+(PHP 8 + MySQL), and Google Play.
 
-## Stack
-- **Android App** — Kotlin + Jetpack Compose (glassmorphic UI)
-- **Backend** — Node.js + Express + SQLite (runs on local PC or free cloud)
-- **Orders** — WhatsApp deep-link checkout (free, no API key)
-- **Tunnel** — Cloudflare Tunnel / Ngrok (free HTTPS)
+| | |
+|---|---|
+| 🌐 Web app | https://abraar05.github.io/dxn-stockpoint/ |
+| 📱 Android | GitHub Releases → `dxn-stockpoint-2.0.0-debug.apk` |
+| 🔌 API | InfinityFree — `https://<your-site>/api/v1/...` |
 
-## Quick Start
+---
 
-### Backend
-```bash
-cd backend
-npm install
-npm run seed    # Seeds 12 DXN products
-npm start       # http://localhost:3000
+## How the pieces fit
+
+```
+        ┌───────────────────────┐
+        │  PHP 8 + MySQL  API   │   single source of truth
+        │  api/  (InfinityFree) │   revision counter on every row
+        └───────────┬───────────┘
+                    │  GET /api/v1/sync?since=<rev>
+        ┌───────────┴───────────┐
+        │                       │
+┌───────▼────────┐     ┌────────▼─────────┐
+│  Web (PWA)     │     │  Android         │
+│  docs/         │     │  android/        │
+│  localStorage  │     │  JSON cache      │
+│  + outbox      │     │  + outbox        │
+└────────────────┘     └──────────────────┘
 ```
 
-### Android App
-Open `android/DXNStockpoint/` in **Android Studio**, sync Gradle, run on emulator or device.
+- **One write path.** A sale made on the phone shows up on the shop laptop
+  within 20 seconds (and vice versa) because both read the same revision feed.
+- **Every row carries `rev`.** Clients store the highest revision they have seen
+  and ask only for what changed — cheap on mobile data.
+- **Orders are idempotent.** The client generates a `client_uuid`; replaying a
+  queued order after a dropped connection can never double-book a sale.
+- **Stock is decremented atomically** (`UPDATE … WHERE stock_qty >= ?`), so two
+  cashiers selling the last unit produce one sale and one clear `409`.
+- **Nothing is lost offline.** Sales queue in an outbox and replay automatically
+  when the connection returns.
 
-> The emulator connects to `http://10.0.2.2:3000/` automatically.  
-> For a real device, set your Cloudflare/Ngrok tunnel URL in **Settings ⚙️**.
+## Repository layout
 
-## APK Download
-After pushing to `main`, GitHub Actions builds the APK automatically.  
-Go to **Actions → Build & Release APK → Artifacts** to download it.
+| Path | What it is |
+|---|---|
+| `api/` | PHP 8 API — no Composer, no framework, drop-in on shared hosting |
+| `docs/` | The web app (ES modules, no build step) + PWA manifest & service worker |
+| `android/DXNStockpoint/` | Kotlin + Jetpack Compose app |
+| `scripts/` | Local dev server, icon generator, toolchain provisioning |
+| `.github/workflows/` | Pages deploy, InfinityFree FTP deploy, APK/AAB build |
 
-## Features
-| Screen | Features |
-|--------|----------|
-| Catalog | Search, category filters, stock badges, glassmorphic cards |
-| Cart | Qty stepper, member/retail pricing toggle, WhatsApp + API checkout |
-| Admin | Dashboard stats, low-stock alerts, stock update, add product, orders |
-| Settings | Server URL, WhatsApp number |
+> `backend/` is the retired v1 Node/SQLite server. It is kept for reference only;
+> nothing in v2 talks to it.
 
-## API Endpoints
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/v1/products` | List all products |
-| POST | `/api/v1/products` | Add product |
-| PUT | `/api/v1/products/:id` | Edit product |
-| POST | `/api/v1/stock/update` | Update stock |
-| GET | `/api/v1/orders` | Order history |
-| POST | `/api/v1/orders` | Place order |
-| GET | `/api/v1/dashboard` | Stats + low-stock |
+## Run it locally
 
+```powershell
+# API on :8099 and the web app on :8100, SQLite, PIN 2468
+powershell -ExecutionPolicy Bypass -File scripts/dev.ps1 -Fresh -Pin 2468
+```
+
+Open http://127.0.0.1:8100, go to **Settings → Connection**, paste
+`http://127.0.0.1:8099`, press **Test connection**, then **Save & sync**.
+The sync pill in the header turns green and reads **Live**.
+
+Build the Android app:
+
+```powershell
+# one-off: downloads JDK-independent SDK + Gradle into .tooling/
+powershell -ExecutionPolicy Bypass -File scripts/provision-android.ps1
+# then
+powershell -ExecutionPolicy Bypass -File scripts/build-android.ps1
+```
+
+The emulator reaches the local API at `http://10.0.2.2:8099` (the app's default).
+
+## Using the app
+
+| Screen | What you can do |
+|---|---|
+| **Catalog** | Search, filter by category, see stock badges, add to cart (member/retail pricing) |
+| **Cart** | Quantity stepper, customer details, discount, WhatsApp checkout, printable slip |
+| **Orders** | History, status changes, CSV export, reprint receipt *(admin)* |
+| **Admin** | Revenue/PV tiles, 7-day chart, low-stock alerts, best sellers, stock ledger, product CRUD *(admin)* |
+| **Settings** | API origin, shop profile, PIN, device backup/reset |
+
+Admin screens need the shop PIN. It is set when the API is installed
+(`--pin=` / `DXN_ADMIN_PIN`) and can be changed from **Settings → Account**.
+
+## Deploy for free
+
+Full walkthrough in [docs/DEPLOYMENT.md](docs/DEPLOYMENT.md). The short version:
+
+1. **API** → InfinityFree. Fill in `api/config/config.php`, upload, open
+   `…/api/install.php?key=<install_key>` once.
+2. **Web** → push to `main`; `pages.yml` publishes `docs/` to GitHub Pages.
+3. **Android** → push to `main`; `build.yml` publishes the APK/AAB to Releases.
+   Upload the `.aab` to Google Play, or sideload the `.apk`.
+4. Point both clients at the same API origin — they now share live data.
+
+## API surface
+
+`GET /api/v1/health` · `/config` · `/products` · `/products/{id}` · `/stock/movements`
+`POST /api/v1/auth/login` · `/products` · `/stock/update` · `/stock/adjust` · `/orders`
+`PUT /api/v1/products/{id}` · `/settings` · `PATCH` same
+`POST /api/v1/orders/{id}/status` · `GET` `/orders` · `/orders/{id}` · `/orders/{id}/receipt`
+`GET /api/v1/dashboard` · `/reports/sales` · `/settings` · `/sync` · `/sync/status`
+
+Auth is either `X-Api-Key: <admin_key>` (machines) or
+`Authorization: Bearer <token>` from `POST /auth/login` with the shop PIN.
+
+## Licence
+
+Private project for DXN stockpoint operations.

@@ -12,14 +12,32 @@ android {
         applicationId = "com.dxn.stockpoint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 2
-        versionName = "1.1.0"
+        versionCode = 3
+        versionName = "2.0.0"
+    }
+
+    // The release keystore is supplied by CI (or a local keystore.properties).
+    // Without it the release build stays unsigned instead of failing the run.
+    signingConfigs {
+        create("release") {
+            val storePath = System.getenv("DXN_KEYSTORE") ?: ""
+            if (storePath.isNotEmpty() && file(storePath).exists()) {
+                storeFile = file(storePath)
+                storePassword = System.getenv("DXN_KEYSTORE_PASSWORD") ?: ""
+                keyAlias = System.getenv("DXN_KEY_ALIAS") ?: "dxn"
+                keyPassword = System.getenv("DXN_KEY_PASSWORD") ?: ""
+            }
+        }
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            val releaseConfig = signingConfigs.getByName("release")
+            if (releaseConfig.storeFile != null) {
+                signingConfig = releaseConfig
+            }
         }
     }
 

@@ -28,3 +28,29 @@ backend/dxn_stockpoint.db
 backend/*.db
 backend/.env
 
+# PHP API — real credentials and runtime state never ship
+api/config/config.php
+api/config/installed.lock
+api/storage/*.sqlite
+api/storage/*.sqlite-journal
+api/storage/*.log
+
+# Local toolchain + scratch
+.tooling/
+.tooling-*.log
+*.tmp
+dist/
+
+# Stale v1.1.0 root APK — releases are published from CI, not committed
+/app-debug.apk
+
+# Kotlin session caches
+android/DXNStockpoint/.kotlin/
+
+# FTP deploy state written by the CI action
+.ftp-state*.json
+api/**/.ftp-state*.json
+
+# PHP dev server router used locally only
+api/public/router.php
+

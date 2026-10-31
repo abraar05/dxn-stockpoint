@@ -1,0 +1,183 @@
+name: Deploy API (InfinityFree)
+
+# The PHP API is the single source of truth for both clients. This workflow
+# lints it on every push and, when DEPLOY_API is enabled, mirrors it over FTP
+# into InfinityFree's htdocs.
+#
+# Required repository secrets:
+#   FTP_SERVER    e.g. ftpupload.net
+#   FTP_USERNAME  your InfinityFree account (if0_xxxxxxxx)
+#   FTP_PASSWORD  your InfinityFree account password
+#
+# Required repository variable:
+#   DEPLOY_API = true
+#
+# Resulting endpoints:  https://<your-subdomain>.infinityfreeapp.com/api/v1/...
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'api/**'
+      - '.github/workflows/api-deploy.yml'
+  pull_request:
+    paths:
+      - 'api/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    name: Lint & boot the API
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up PHP 8.3
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_sqlite, mbstring, json
+          coverage: none
+
+      - name: Syntax-check every PHP file
+        run: |
+          set -e
+          find api -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null
+          echo "All PHP files parse cleanly."
+
+      - name: Install schema into a throwaway SQLite database
+        env:
+          DXN_DRIVER: sqlite
+          DXN_DB_PATH: ${{ github.workspace }}/api/storage/ci.sqlite
+        run: php api/bin/install.php --pin=4242
+
+      - name: Boot the API and smoke-test the public surface
+        env:
+          DXN_DRIVER: sqlite
+          DXN_DB_PATH: ${{ github.workspace }}/api/storage/ci.sqlite
+          DXN_ADMIN_KEY: ci-admin-key-0123456789
+        run: |
+          set -e
+          php -S 127.0.0.1:8099 -t api/public api/public/index.php > /tmp/php.log 2>&1 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8099/api/v1/health > /dev/null && break
+            sleep 1
+          done
+
+          php -r '
+            $base = "http://127.0.0.1:8099/api/v1";
+            $fail = 0;
+            $check = function (string $name, bool $ok) use (&$fail) {
+                echo ($ok ? "  ok   " : "  FAIL ") . $name . PHP_EOL;
+                if (!$ok) { $fail++; }
+            };
+            $get = function (string $path) use ($base) {
+                $raw = @file_get_contents($base . $path);
+                return $raw === false ? null : json_decode($raw, true);
+            };
+
+            $health = $get("/health");
+            $check("health returns success", is_array($health) && ($health["success"] ?? false) === true);
+            $check("health reports a version", isset($health["version"]));
+
+            $products = $get("/products");
+            $check("catalogue is public", is_array($products) && ($products["success"] ?? false) === true);
+            $check("catalogue has seeded SKUs", count($products["products"] ?? []) >= 12);
+
+            $sync = $get("/sync?since=0");
+            $check("sync works without a token", is_array($sync) && ($sync["success"] ?? false) === true);
+            $check("sync exposes a server revision", isset($sync["server_rev"]));
+            $check("anonymous sync hides orders", count($sync["orders"] ?? []) === 0);
+
+            $config = $get("/config");
+            $check("config exposes the branch name", isset($config["branch"]["branch_name"]));
+
+            $orders = $get("/orders");
+            $check("orders require admin", $orders === null || ($orders["success"] ?? true) === false);
+
+            exit($fail === 0 ? 0 : 1);
+          '
+          echo "Smoke suite passed."
+          cat /tmp/php.log | tail -20
+
+  deploy:
+    name: Mirror api/ to InfinityFree
+    needs: lint
+    if: vars.DEPLOY_API == 'true' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+
+      # htdocs/api/index.php + install.php + .htaccess
+      - name: Upload front controller
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./api/public/
+          server-dir: /htdocs/api/
+          state-name: .ftp-state-public.json
+          exclude: |
+            **/.ftp-state*.json
+            **/router.php
+
+      # htdocs/api/src/**
+      - name: Upload application source
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./api/src/
+          server-dir: /htdocs/api/src/
+          state-name: .ftp-state-src.json
+
+      # htdocs/api/config/** — config.php is created once on the host and must
+      # never be overwritten by CI (it holds the MySQL password and HMAC secret).
+      - name: Upload config scaffolding
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./api/config/
+          server-dir: /htdocs/api/config/
+          state-name: .ftp-state-config.json
+          exclude: |
+            **/config.php
+            **/installed.lock
+            **/.ftp-state*.json
+
+      - name: Upload storage guard
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: 21
+          protocol: ftp
+          local-dir: ./api/storage/
+          server-dir: /htdocs/api/storage/
+          state-name: .ftp-state-storage.json
+          exclude: |
+            **/*.sqlite
+            **/*.db
+            **/*.log
+            **/.ftp-state*.json
+
+      - name: Where to go next
+        run: |
+          echo "API uploaded."
+          echo "Open https://<your-subdomain>.infinityfreeapp.com/api/install.php?key=<DXN_INSTALL_KEY> once,"
+          echo "then point the web app and the Android app at the same origin."
