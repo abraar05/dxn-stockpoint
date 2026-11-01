@@ -166,10 +166,10 @@ catalogue.
 - `dxn-stockpoint-2.1.0-debug.apk` — sideloadable, no signing setup needed
 - `dxn-stockpoint-2.1.0.aab` — for Google Play
 
-Both are attached to the **v2.1.0** GitHub Release.
+Both are attached to the **v2.1.1** GitHub Release.
 
 > `v2.0.0` on this repo predates the PHP API rewrite and is kept only as
-> history. Ship `v2.1.0` — `versionCode 5` — from here on.
+> history. Ship `v2.1.1` — `versionCode 6` — from here on.
 
 ### Signed release (Play Store)
 
@@ -185,11 +185,11 @@ Both are attached to the **v2.1.0** GitHub Release.
 3. Add secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
    `ANDROID_KEY_ALIAS` (`dxn`), `ANDROID_KEY_PASSWORD`.
 
-4. Push a tag: `git tag v2.1.0; git push origin v2.1.0`
+4. Push a tag: `git tag v2.1.1; git push origin v2.1.1`
 
 ### Google Play
 
-1. Play Console → **Create app** → upload `dxn-stockpoint-2.1.0.aab`.
+1. Play Console → **Create app** → upload `dxn-stockpoint-2.1.1.aab`.
 2. Store listing needs: 512×512 icon, 1024×500 feature graphic, 2+ screenshots,
    short + full description, and a privacy policy URL — use
    <https://abraar05.github.io/dxn-stockpoint/privacy.html>

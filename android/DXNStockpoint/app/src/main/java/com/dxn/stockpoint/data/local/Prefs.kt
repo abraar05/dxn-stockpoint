@@ -18,11 +18,12 @@ object Prefs {
     private const val KEY_REV = "last_rev"
     private const val KEY_CART = "cart_snapshot"
 
-    /** Emulator loopback. A real phone points this at the InfinityFree domain. */
-    const val DEFAULT_BASE_URL = "http://10.0.2.2:8099/"
+    /** The live shop API — fresh installs connect out of the box. */
+    const val DEFAULT_BASE_URL = "https://dxn.infy.click/"
     const val DEFAULT_WA_PHONE = "8801939994578"
 
-    /** Default shipped before the Mohammadpur rebrand; silently migrated below. */
+    /** Pre-rebrand defaults; untouched values silently migrate in the getters. */
+    private const val LEGACY_BASE_URL = "http://10.0.2.2:8099/"
     private const val LEGACY_WA_PHONE = "8801987851131"
 
     private var prefs: SharedPreferences? = null
@@ -37,7 +38,15 @@ object Prefs {
         prefs ?: throw IllegalStateException("Prefs.init(context) must be called from Application/Activity")
 
     var baseUrl: String
-        get() = p().getString(KEY_BASE_URL, DEFAULT_BASE_URL) ?: DEFAULT_BASE_URL
+        get() {
+            val stored = p().getString(KEY_BASE_URL, null) ?: return DEFAULT_BASE_URL
+            if (stored == LEGACY_BASE_URL) {
+                // Emulator-loopback default from older builds — move to the live API.
+                p().edit().putString(KEY_BASE_URL, DEFAULT_BASE_URL).apply()
+                return DEFAULT_BASE_URL
+            }
+            return stored
+        }
         set(value) = p().edit().putString(KEY_BASE_URL, value).apply()
 
     var token: String?

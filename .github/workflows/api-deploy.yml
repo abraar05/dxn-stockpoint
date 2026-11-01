@@ -176,8 +176,41 @@ jobs:
             **/*.log
             **/.ftp-state*.json
 
-      - name: Where to go next
+      - name: Install & verify the production database
+        env:
+          API_ORIGIN: https://dxn.infy.click
         run: |
-          echo "API uploaded."
-          echo "Open https://<your-subdomain>.infinityfreeapp.com/api/install.php?key=<DXN_INSTALL_KEY> once,"
-          echo "then point the web app and the Android app at the same origin."
+          base="$API_ORIGIN/api/v1"
+          check() { echo "$1: $2"; }
+
+          health="$(curl -sS --max-time 20 "$base/health" 2>/dev/null || true)"
+          if [ -z "$health" ]; then
+            echo "::warning::InfinityFree did not answer a plain HTTP probe (its browser challenge blocks runner traffic). Run the one-time install URL in a browser instead."
+            echo "No health response — skipping the automatic install/verify."
+            exit 0
+          fi
+
+          check "health" "$health"
+          installed="$(echo "$health" | grep -o '"installed":[a-z]*' | cut -d: -f2 || true)"
+
+          if [ "$installed" != "true" ]; then
+            echo "::error::API is not installed yet — open $API_ORIGIN/api/install.php?key=<install_key> in a browser once (never via CI: install.php would reset the admin PIN)."
+            exit 0
+          fi
+
+          # Running the schema/migration applies backfillArtwork + backfillBranding.
+          # It requires no bearer token on an already-installed database.
+          migrate="$(curl -sS --max-time 30 -X POST "$base/migrate" 2>/dev/null || true)"
+          check "migrate" "$migrate"
+
+          config="$(curl -sS --max-time 20 "$base/config" 2>/dev/null || true)"
+          check "config" "$config"
+          echo "$config" | grep -q '"branch_name":"Mohammadpur Stock Point"' \
+            || echo "::warning::branch_name is not the Mohammadpur profile yet — a custom value is intentionally preserved; check /api/v1/config."
+
+          curl -sS --max-time 20 "$base/products" 2>/dev/null \
+            | grep -q 'abraar05.github.io/dxn-stockpoint/images/products' \
+            && echo "product photos present on the server ✔" \
+            || echo "::warning::product photos not found on the server — check /api/v1/products."
+
+          echo "Production database install/verify finished."

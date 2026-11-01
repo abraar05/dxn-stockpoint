@@ -1,4 +1,4 @@
-# Mohammadpur Stock Point v2.1.0 🛒
+# Mohammadpur Stock Point v2.1.1 🛒
 
 An offline-first stockpoint POS for Mohammadpur Stock Point, a DXN distributor —
 **one PHP API, two clients that stay in sync**: an installable web app and a
@@ -8,7 +8,7 @@ Releases, InfinityFree (PHP 8 + MySQL), and Google Play.
 | | |
 |---|---|
 | 🌐 Web app | https://abraar05.github.io/dxn-stockpoint/ |
-| 📱 Android | GitHub Releases → `dxn-stockpoint-2.1.0-debug.apk` |
+| 📱 Android | GitHub Releases → `dxn-stockpoint-2.1.1-debug.apk` |
 | 🔌 API | InfinityFree — `https://<your-site>/api/v1/...` |
 | 🔒 Privacy | https://abraar05.github.io/dxn-stockpoint/privacy.html |
 

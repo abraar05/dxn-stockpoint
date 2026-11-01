@@ -102,8 +102,9 @@ fun SettingsScreen(
                             Text("✅ URL saved. Reloading catalog…", color = EmeraldGreen, fontSize = 12.sp)
                         }
                         Text(
-                            "💡 Tip: For real device, use your Ngrok/Cloudflare URL.\n" +
-                            "For emulator, keep http://10.0.2.2:3000/",
+                            "💡 Tip: the built-in default connects to the live shop API\n" +
+                            "(https://dxn.infy.click/). For local development, point this\n" +
+                            "at a tunnel or the emulator loopback instead.",
                             fontSize = 11.sp, color = Color.Gray
                         )
                     }
