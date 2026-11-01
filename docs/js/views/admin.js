@@ -150,6 +150,7 @@ function lowStockHtml(stats) {
       <div class="list">
         ${stats.lowStock.slice(0, 8).map((product) => `
           <div class="list__row">
+            ${store.imageFor(product) ? `<img class="list__thumb" src="${esc(store.imageFor(product))}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
             <div class="list__main">
               <div class="list__title">${esc(product.name)}</div>
               <div class="list__sub">${esc(product.sku)}</div>
@@ -191,8 +192,13 @@ function inventoryTableHtml() {
           ${rows.map((product) => `
             <tr data-product-row="${product.id}" style="${Number(product.is_active ?? 1) === 0 ? 'opacity:.55' : ''}">
               <td>
-                <div style="font-weight:700;font-size:12.5px">${esc(product.name)}</div>
-                <div class="mono" style="color:var(--faint)">${esc(product.sku)}</div>
+                <div style="display:flex;align-items:center">
+                  ${store.imageFor(product) ? `<img class="admin-thumb" src="${esc(store.imageFor(product))}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
+                  <div>
+                    <div style="font-weight:700;font-size:12.5px">${esc(product.name)}</div>
+                    <div class="mono" style="color:var(--faint)">${esc(product.sku)}</div>
+                  </div>
+                </div>
               </td>
               <td style="font-size:12px;color:var(--muted)">${esc(product.category)}</td>
               <td style="text-align:right;font-weight:800">${int(product.stock_qty)}</td>

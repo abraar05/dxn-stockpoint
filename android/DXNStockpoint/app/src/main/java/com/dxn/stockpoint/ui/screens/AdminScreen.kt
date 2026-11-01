@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import com.dxn.stockpoint.data.model.DashboardData
 import com.dxn.stockpoint.data.model.Order
 import com.dxn.stockpoint.data.model.Product
+import com.dxn.stockpoint.ui.components.ProductThumb
 import com.dxn.stockpoint.ui.components.StatCard
 import com.dxn.stockpoint.ui.theme.*
 import com.dxn.stockpoint.viewmodel.UiState
@@ -156,9 +157,20 @@ private fun DashboardTab(state: UiState<DashboardData>) {
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Column {
-                                    Text(product.name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
-                                    Text(product.category, fontSize = 12.sp, color = Color.Gray)
+                                Row(
+                                    modifier = Modifier.weight(1f),
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    ProductThumb(
+                                        product = product,
+                                        modifier = Modifier.size(42.dp),
+                                        cornerRadius = 10.dp
+                                    )
+                                    Spacer(modifier = Modifier.width(10.dp))
+                                    Column {
+                                        Text(product.name, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                                        Text(product.category, fontSize = 12.sp, color = Color.Gray)
+                                    }
                                 }
                                 Badge(containerColor = Color(0xFFD32F2F)) {
                                     Text("${product.stockQty} left", color = Color.White, fontSize = 11.sp)

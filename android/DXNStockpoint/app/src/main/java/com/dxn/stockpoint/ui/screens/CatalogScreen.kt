@@ -2,6 +2,7 @@
 
 package com.dxn.stockpoint.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -18,9 +19,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dxn.stockpoint.R
 import com.dxn.stockpoint.data.model.Product
 import com.dxn.stockpoint.ui.components.CartBadgeFab
 import com.dxn.stockpoint.ui.components.GlassmorphicProductCard
@@ -51,9 +55,27 @@ fun CatalogScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Column {
-                        Text("DXN Stockpoint 🛒", fontWeight = FontWeight.ExtraBold, fontSize = 18.sp)
-                        Text("Product Catalog", fontSize = 11.sp, color = Color.White.copy(alpha = 0.8f))
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Image(
+                            painter = painterResource(R.drawable.logo_mark),
+                            contentDescription = null,
+                            modifier = Modifier.size(32.dp)
+                        )
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                "Mohammadpur Stock Point",
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 15.sp,
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                            Text(
+                                "DXN Product Catalog",
+                                fontSize = 11.sp,
+                                color = Color.White.copy(alpha = 0.8f)
+                            )
+                        }
                     }
                 },
                 actions = {

@@ -118,8 +118,14 @@ Open in a browser:
 https://your-subdomain.infinityfreeapp.com/api/install.php?key=<install_key>
 ```
 
-It creates the tables, seeds the 12 DXN products, and stores your hashed shop
-PIN. Re-running it is safe — it only adds what is missing.
+It creates the tables, seeds the 12 DXN products (with their official product
+photos), and stores your hashed shop PIN. Re-running it is safe — it only adds
+what is missing.
+
+**Upgrading from v2.0.1?** Upload the new `api/` files, keep your existing
+`config.php`, then re-run `install.php` (or `POST /api/v1/migrate` while signed
+in as admin). The migration fills product photos/descriptions and moves only
+untouched placeholder shop details to the Mohammadpur Stock Point profile.
 
 Verify:
 
@@ -127,7 +133,7 @@ Verify:
 curl.exe https://your-subdomain.infinityfreeapp.com/api/v1/health
 ```
 
-Expected: `{"success":true,"status":"ok","version":"2.0.0","driver":"mysql",...}`
+Expected: `{"success":true,"status":"ok","version":"2.1.0","driver":"mysql",...}`
 
 > If you see `database_unavailable`, the DB host/user/pass in `config.php` are
 > wrong — InfinityFree always uses `sqlNNN.infinityfree.com`, not `localhost`.
@@ -157,13 +163,13 @@ catalogue.
 
 `build.yml` runs on every push that touches `android/`. It produces:
 
-- `dxn-stockpoint-2.0.1-debug.apk` — sideloadable, no signing setup needed
-- `dxn-stockpoint-2.0.1.aab` — for Google Play
+- `dxn-stockpoint-2.1.0-debug.apk` — sideloadable, no signing setup needed
+- `dxn-stockpoint-2.1.0.aab` — for Google Play
 
-Both are attached to the **v2.0.1** GitHub Release.
+Both are attached to the **v2.1.0** GitHub Release.
 
 > `v2.0.0` on this repo predates the PHP API rewrite and is kept only as
-> history. Ship `v2.0.1` — `versionCode 4` — from here on.
+> history. Ship `v2.1.0` — `versionCode 5` — from here on.
 
 ### Signed release (Play Store)
 
@@ -179,11 +185,11 @@ Both are attached to the **v2.0.1** GitHub Release.
 3. Add secrets: `ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`,
    `ANDROID_KEY_ALIAS` (`dxn`), `ANDROID_KEY_PASSWORD`.
 
-4. Push a tag: `git tag v2.0.1; git push origin v2.0.1`
+4. Push a tag: `git tag v2.1.0; git push origin v2.1.0`
 
 ### Google Play
 
-1. Play Console → **Create app** → upload `dxn-stockpoint-2.0.1.aab`.
+1. Play Console → **Create app** → upload `dxn-stockpoint-2.1.0.aab`.
 2. Store listing needs: 512×512 icon, 1024×500 feature graphic, 2+ screenshots,
    short + full description, and a privacy policy URL — use
    <https://abraar05.github.io/dxn-stockpoint/privacy.html>

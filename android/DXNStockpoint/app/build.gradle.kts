@@ -12,8 +12,8 @@ android {
         applicationId = "com.dxn.stockpoint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "2.0.1"
+        versionCode = 5
+        versionName = "2.1.0"
     }
 
     // The release keystore comes from CI (env vars) or a local
@@ -88,6 +88,9 @@ dependencies {
 
     // Coroutines
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3")
+
+    // Product photography (remote URLs for shopkeeper-added products)
+    implementation("io.coil-kt:coil-compose:2.7.0")
 
     // Debug
     debugImplementation(libs.androidx.ui.tooling)

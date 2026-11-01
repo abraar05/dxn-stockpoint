@@ -55,6 +55,22 @@ export function openProductForm(product = null) {
           ${isEdit ? '' : `<label class="field" style="grid-column:1/-1"><span>Opening stock</span>
             <input class="input" name="stock_qty" type="number" step="1" min="0" value="0"></label>`}
 
+          <label class="field" style="grid-column:1/-1"><span>Product photo URL</span>
+            <input class="input" name="image_url" id="productImageUrl" maxlength="255"
+              value="${value('image_url')}" placeholder="images/products/lingzhi-coffee-3in1.jpg or https://…">
+            <small style="font-size:11px;color:var(--muted)">Leave blank to use the bundled DXN photo for this SKU.</small></label>
+
+          <div class="field" style="grid-column:1/-1;align-items:center">
+            <span>Preview</span>
+            <div id="productImagePreview" class="product__media" style="max-width:190px;width:100%;margin-top:2px">
+              <div class="product__placeholder">
+                <img src="icons/logo-mark-96.png" alt="" loading="lazy">
+                <span>DXN product</span>
+              </div>
+              <img class="product__img" id="productImagePreviewImg" alt="" hidden>
+            </div>
+          </div>
+
           <label class="field" style="grid-column:1/-1"><span>Description</span>
             <textarea class="textarea" name="description" maxlength="500">${value('description')}</textarea></label>
         </div>
@@ -74,6 +90,32 @@ export function openProductForm(product = null) {
     onMount(panel) {
       const form = panel.querySelector('#productForm');
       const save = panel.querySelector('#productSave');
+      const imageInput = panel.querySelector('#productImageUrl');
+      const preview = panel.querySelector('#productImagePreviewImg');
+
+      const paintPreview = () => {
+        const raw = String(imageInput?.value || '').trim()
+          || store.PRODUCT_IMAGES[String(form.elements.sku?.value || '').trim()] || '';
+        let src = '';
+        try {
+          src = raw ? new URL(raw, document.baseURI).href : '';
+        } catch {
+          src = raw;
+        }
+        if (!preview) return;
+        if (!src) {
+          preview.hidden = true;
+          preview.removeAttribute('src');
+          return;
+        }
+        preview.src = src;
+        preview.hidden = false;
+      };
+
+      imageInput?.addEventListener('input', paintPreview);
+      form.elements.sku?.addEventListener('input', paintPreview);
+      preview?.addEventListener('error', () => { preview.hidden = true; });
+      paintPreview();
 
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -87,6 +129,7 @@ export function openProductForm(product = null) {
           member_price: num(data.get('member_price')),
           pv_points: num(data.get('pv_points')),
           low_stock_at: Math.max(0, Math.round(num(data.get('low_stock_at'), 5))),
+          image_url: String(data.get('image_url') || '').trim() || null,
         };
 
         if (!body.name || !body.sku) {

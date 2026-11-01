@@ -38,12 +38,20 @@ function card(product) {
   const otherLabel = store.state.tier === 'member' ? 'Retail' : 'Member';
   const soldOut = level === 'out';
   const pv = num(product.pv_points);
+  const photo = store.imageFor(product);
 
   return `
     <article class="product ${soldOut ? 'is-out' : ''}" data-product="${product.id}">
       <div class="product__top">
         <span class="product__cat">${esc(product.category || 'General')}</span>
         <span class="product__pv">${pv ? `${int(pv)} PV` : '—'}</span>
+      </div>
+      <div class="product__media">
+        <div class="product__placeholder">
+          <img src="icons/logo-mark-96.png" alt="" loading="lazy">
+          <span>DXN product</span>
+        </div>
+        ${photo ? `<img class="product__img" src="${esc(photo)}" alt="${esc(product.name)}" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
       </div>
       <div>
         <h3 class="product__name">${esc(product.name)}</h3>

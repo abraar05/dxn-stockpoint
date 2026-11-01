@@ -79,7 +79,7 @@ final class Router
         if ($path === '/' || $path === '/index.php') {
             Response::json([
                 'success' => true,
-                'service' => 'DXN Stockpoint API',
+                'service' => 'Mohammadpur Stock Point API',
                 'version' => Config::get('version'),
                 'docs'    => '/api/v1/health',
                 'installed' => Config::installed(),

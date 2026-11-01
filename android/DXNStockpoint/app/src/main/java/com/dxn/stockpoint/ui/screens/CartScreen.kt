@@ -24,6 +24,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.dxn.stockpoint.data.model.CartItem
+import com.dxn.stockpoint.ui.components.ProductThumb
 import com.dxn.stockpoint.ui.theme.*
 import com.dxn.stockpoint.util.sendOrderToWhatsApp
 
@@ -273,6 +274,11 @@ private fun CartItemRow(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            ProductThumb(
+                product = item.product,
+                modifier = Modifier.size(56.dp)
+            )
+            Spacer(modifier = Modifier.width(10.dp))
             Column(modifier = Modifier.weight(1f)) {
                 Text(item.product.name, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = DarkText)
                 Text(item.product.category, fontSize = 11.sp, color = Color.Gray)

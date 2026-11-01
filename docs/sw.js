@@ -1,11 +1,11 @@
 /**
- * Service worker for the DXN Stockpoint web app.
+ * Service worker for the Mohammadpur Stock Point web app.
  *
  * Caches the app shell so the POS opens with no signal; never touches API
  * responses (different origin) so sync always talks to the real server.
  */
 
-const VERSION = 'dxn-stockpoint-2.0.1';
+const VERSION = 'dxn-stockpoint-2.1.0';
 const SHELL = [
   './',
   './index.html',
@@ -25,6 +25,25 @@ const SHELL = [
   './js/views/product-form.js',
   './icons/icon.svg',
   './icons/icon-192.png',
+  './icons/icon-512.png',
+  './icons/icon-maskable-512.png',
+  './icons/logo-mark-96.png',
+  './icons/logo-mark-192.png',
+  './icons/logo-full.png',
+  './icons/favicon-32.png',
+  './icons/apple-touch-icon.png',
+  './images/products/lingzhi-coffee-3in1.jpg',
+  './images/products/lingzhi-coffee-2in1.jpg',
+  './images/products/zhi-mocha-premium.jpg',
+  './images/products/lingzhi-coffee-lite.jpg',
+  './images/products/rggl-capsules-90.jpg',
+  './images/products/morinzhi-pure-noni.jpg',
+  './images/products/spirulina-tablets-120.jpg',
+  './images/products/andro-g-capsules-90.jpg',
+  './images/products/lingzhi-black-tea.jpg',
+  './images/products/ganozhi-toothpaste.jpg',
+  './images/products/ganozhi-beauty-soap.jpg',
+  './images/products/ganozhi-shampoo.jpg',
 ];
 
 self.addEventListener('install', (event) => {

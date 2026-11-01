@@ -2,6 +2,7 @@
 
 package com.dxn.stockpoint.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,11 +11,16 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Save
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.dxn.stockpoint.R
 import com.dxn.stockpoint.ui.theme.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -152,13 +158,49 @@ fun SettingsScreen(
                     colors = CardDefaults.cardColors(containerColor = LightGreen),
                     elevation = CardDefaults.cardElevation(0.dp)
                 ) {
-                    Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(4.dp)) {
-                        Text("ℹ️ About", fontWeight = FontWeight.Bold, fontSize = 16.sp, color = DarkText)
-                        Text("DXN Stockpoint", fontWeight = FontWeight.Bold, color = ForestGreen, fontSize = 14.sp)
-                        Text("Version 1.0.0", fontSize = 12.sp, color = Color.Gray)
-                        Text("Zero-cost offline-first POS & order management system for DXN stockpoints.", fontSize = 12.sp, color = Color.Gray)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(4.dp)
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.logo_full),
+                            contentDescription = "Mohammadpur Stock Point logo",
+                            contentScale = ContentScale.Fit,
+                            modifier = Modifier.size(150.dp)
+                        )
+                        Text(
+                            "Mohammadpur Stock Point",
+                            fontWeight = FontWeight.ExtraBold,
+                            color = ForestGreen,
+                            fontSize = 16.sp,
+                            textAlign = TextAlign.Center
+                        )
+                        Text("Independent DXN distributor", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "H # 1, R # 11, B # A, Chandrima Model Town, Dhaka-1207",
+                            fontSize = 12.sp,
+                            color = DarkText.copy(alpha = 0.75f),
+                            textAlign = TextAlign.Center
+                        )
+                        Text("Ph. 01939994578", fontSize = 12.sp, color = DarkText.copy(alpha = 0.75f))
+                        Spacer(modifier = Modifier.height(6.dp))
+                        Text("Version 2.1.0", fontSize = 12.sp, color = Color.Gray)
+                        Text(
+                            "Offline-first POS, inventory and PV tracking for the shop.",
+                            fontSize = 12.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
                         Spacer(modifier = Modifier.height(4.dp))
-                        Text("Stack: Kotlin · Jetpack Compose · Retrofit · Node.js · SQLite", fontSize = 11.sp, color = Color.Gray)
+                        Text(
+                            "Stack: Kotlin · Jetpack Compose · Retrofit · PHP 8 · MySQL",
+                            fontSize = 11.sp,
+                            color = Color.Gray,
+                            textAlign = TextAlign.Center
+                        )
                     }
                 }
             }

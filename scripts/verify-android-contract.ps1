@@ -49,12 +49,12 @@ function Post-Json([string]$path, $body, [string]$token = '') {
     }
 }
 
-Write-Host "`nDXN Stockpoint — Android API contract check against $Base`n"
+Write-Host "`nMohammadpur Stock Point — Android API contract check against $Base`n"
 
 # ── 1. Health ───────────────────────────────────────────────────────────────
 $health = Get-Json '/api/v1/health'
 Check 'health returns success' ($health.success -eq $true)
-Check 'health reports version 2.0.0' ($health.version -eq '2.0.0') "got '$($health.version)'"
+Check 'health reports version 2.1.0' ($health.version -eq '2.1.0') "got '$($health.version)'"
 Check 'health exposes server_rev' ($null -ne $health.server_rev)
 
 # ── 2. Public sync (the anonymous catalogue pull) ───────────────────────────

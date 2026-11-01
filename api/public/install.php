@@ -47,7 +47,7 @@ if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST') {
         $errors[] = 'Database connection failed: ' . $dbError;
     } else {
         $pin = trim((string) ($_POST['pin'] ?? ''));
-        $branch = Util::clean($_POST['branch_name'] ?? 'DXN Stockpoint', 120);
+        $branch = Util::clean($_POST['branch_name'] ?? 'Mohammadpur Stock Point', 120);
         $wa = preg_replace('/\D+/', '', (string) ($_POST['whatsapp_number'] ?? '')) ?: '';
         $currency = strtoupper(Util::clean($_POST['currency'] ?? 'BDT', 8));
 
@@ -85,7 +85,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>DXN Stockpoint — API Installer</title>
+<title>Mohammadpur Stock Point — API Installer</title>
 <style>
   :root { --green:#054A29; --emerald:#0A723D; --gold:#B8860B; --bg:#F4F7F5; --line:#e1e8e3; }
   * { box-sizing:border-box; font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif; }
@@ -110,7 +110,7 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 
 <body>
 <div class="wrap">
   <div class="card">
-    <span class="badge">DXN Stockpoint API</span>
+    <span class="badge">Mohammadpur Stock Point API</span>
     <h1 style="margin-top:12px">Install / repair</h1>
     <p class="sub">Version <?= Util::e(Config::get('version')) ?> · driver <code><?= Config::isSqlite() ? 'sqlite' : 'mysql' ?></code></p>
 
@@ -154,10 +154,10 @@ $baseUrl = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https' : 
         <input id="pin" name="pin" type="password" inputmode="numeric" placeholder="At least 4 digits" required minlength="4">
 
         <label for="branch_name">Stockpoint name</label>
-        <input id="branch_name" name="branch_name" value="<?= Util::e(Store::setting('branch_name', 'DXN Stockpoint Central') ?? '') ?>">
+        <input id="branch_name" name="branch_name" value="<?= Util::e(Store::setting('branch_name', 'Mohammadpur Stock Point') ?? '') ?>">
 
         <label for="whatsapp_number">WhatsApp order number (digits, with country code)</label>
-        <input id="whatsapp_number" name="whatsapp_number" value="<?= Util::e(Store::setting('whatsapp_number', '') ?? '') ?>" placeholder="8801987851131">
+        <input id="whatsapp_number" name="whatsapp_number" value="<?= Util::e(Store::setting('whatsapp_number', '') ?? '') ?>" placeholder="8801939994578">
 
         <label for="currency">Currency code</label>
         <input id="currency" name="currency" value="<?= Util::e(Store::setting('currency', 'BDT') ?? 'BDT') ?>">

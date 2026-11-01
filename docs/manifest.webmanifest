@@ -1,7 +1,7 @@
 {
-  "name": "DXN Stockpoint",
-  "short_name": "Stockpoint",
-  "description": "Point of sale, inventory and PV tracking for a DXN stockpoint. Works offline and syncs with the Android app.",
+  "name": "Mohammadpur Stock Point",
+  "short_name": "MSP Stockpoint",
+  "description": "Mohammadpur Stock Point — DXN point of sale, inventory and PV tracking. Works offline and syncs with the Android app.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

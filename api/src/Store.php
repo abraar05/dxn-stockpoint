@@ -72,7 +72,7 @@ final class Store
     {
         $all = self::settings();
         return [
-            'branch_name'     => $all['branch_name'] ?? 'DXN Stockpoint',
+            'branch_name'     => $all['branch_name'] ?? 'Mohammadpur Stock Point',
             'whatsapp_number' => $all['whatsapp_number'] ?? '',
             'currency'        => $all['currency'] ?? 'BDT',
             'low_stock_threshold' => (int) ($all['low_stock_threshold'] ?? 5),

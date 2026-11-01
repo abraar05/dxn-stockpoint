@@ -1,5 +1,5 @@
 /* ==========================================================================
-   DXN Stockpoint — design system
+   Mohammadpur Stock Point — design system
    Forest green / gold, glass surfaces, dense but readable POS layout.
    ========================================================================== */
 
@@ -69,6 +69,12 @@ a { color: var(--primary-light); }
   background: linear-gradient(135deg, var(--accent-light), var(--primary-light));
   display: grid; place-items: center; font-size: 19px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, .25);
+}
+.brand__logo {
+  width: 40px; height: 40px; flex-shrink: 0;
+  border-radius: 50%; background: #fff;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .28), 0 0 0 2px rgba(255, 255, 255, .18);
+  object-fit: contain;
 }
 .brand__text strong { display: block; font-size: 15px; font-weight: 800; letter-spacing: -.3px; }
 .brand__text span { font-size: 10px; text-transform: uppercase; letter-spacing: 1.1px; opacity: .82; font-weight: 700; }
@@ -233,6 +239,23 @@ main { max-width: 1400px; margin: 0 auto; padding: 22px 20px 96px; }
 .product:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); border-color: rgba(10, 114, 61, .28); }
 .product:hover::after { opacity: 1; }
 .product.is-out { opacity: .72; }
+.product__media {
+  position: relative; display: grid; place-items: center;
+  aspect-ratio: 1 / 1; overflow: hidden;
+  background: #F4F7F5; border: 1px solid #EAF0EB; border-radius: 14px;
+}
+.product__img {
+  position: absolute; inset: 0;
+  width: 100%; height: 100%; object-fit: contain; padding: 8px;
+  mix-blend-mode: multiply; transition: transform .25s ease;
+}
+.product:hover .product__img { transform: scale(1.035); }
+.product__placeholder {
+  display: grid; place-items: center; gap: 5px;
+  color: var(--faint); font-size: 10px; font-weight: 800;
+  text-transform: uppercase; letter-spacing: .8px; text-align: center; padding: 10px;
+}
+.product__placeholder img { width: 44px; height: 44px; opacity: .8; }
 .product__top { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
 .product__cat { font-size: 10px; font-weight: 800; letter-spacing: .6px; text-transform: uppercase; color: var(--primary-light); background: var(--primary-soft); padding: 3px 8px; border-radius: 6px; }
 .product__pv { font-family: var(--mono); font-size: 11px; font-weight: 700; background: #EEF3EF; color: var(--primary); padding: 3px 8px; border-radius: 8px; }
@@ -285,6 +308,20 @@ tbody tr:hover { background: #FBFDFB; }
 .list__main { flex: 1; min-width: 0; }
 .list__title { font-size: 13px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .list__sub { font-size: 11.5px; color: var(--muted); }
+.list__thumb {
+  width: 42px; height: 42px; flex-shrink: 0; object-fit: contain;
+  background: #F4F7F5; border: 1px solid #EAF0EB; border-radius: 10px; padding: 3px;
+  mix-blend-mode: multiply;
+}
+.admin-thumb {
+  width: 38px; height: 38px; object-fit: contain; vertical-align: middle;
+  background: #F4F7F5; border: 1px solid #EAF0EB; border-radius: 9px; padding: 3px;
+  margin-right: 9px; mix-blend-mode: multiply;
+}
+.about-logo {
+  width: min(320px, 82%); margin: 0 auto 16px; border-radius: 18px;
+  background: #fff; box-shadow: var(--shadow-sm);
+}
 
 /* ── Drawer & modals ─────────────────────────────────────────────────────── */
 
@@ -310,6 +347,11 @@ tbody tr:hover { background: #FBFDFB; }
 .drawer__foot { padding: 16px; background: var(--surface); border-top: 1.5px solid var(--border); display: flex; flex-direction: column; gap: 10px; }
 
 .cart-row { display: flex; gap: 12px; align-items: center; background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 11px 13px; }
+.cart-row__thumb {
+  width: 46px; height: 46px; flex-shrink: 0; object-fit: contain;
+  background: #F4F7F5; border: 1px solid #EAF0EB; border-radius: 11px; padding: 3px;
+  mix-blend-mode: multiply;
+}
 .cart-row__main { flex: 1; min-width: 0; }
 .cart-row__name { font-size: 13px; font-weight: 700; }
 .cart-row__meta { font-size: 11.5px; color: var(--muted); }

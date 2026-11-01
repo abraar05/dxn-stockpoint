@@ -1,0 +1,125 @@
+{
+  "collectedAt": "2026-11-01",
+  "shop": {
+    "name": "Mohammadpur Stock Point",
+    "address": "H # 1, R # 11, B # A, Chandrima Model Town, Dhaka-1207",
+    "phone": "01939994578"
+  },
+  "notes": [
+    "Product photographs are used to identify genuine DXN products in this shop's catalogue.",
+    "DXN, Lingzhi, Ganozhi, Morinzhi and the DXN logo are trademarks of DXN Holdings Bhd. This shop is an independent DXN distributor.",
+    "Images were downloaded from DXN's public product catalogue (dxn2u.com) and DXN Canada (dxncanada.ca) on 2026-11-01.",
+    "The RG/GL image is a composite of the official RG-90 and GL-90 bottle photos.",
+    "Files were trimmed, centred on a white canvas and re-encoded for the web and Android app; the original source URL is kept for verification."
+  ],
+  "products": [
+    {
+      "sku": "DXN-LZC-3IN1-20",
+      "name": "Lingzhi Coffee 3-in-1",
+      "category": "Coffee",
+      "appImage": "docs/images/products/lingzhi-coffee-3in1.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/FFB/CF/3in1.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=FFB",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-LZC-2IN1-20",
+      "name": "Lingzhi Coffee 2-in-1",
+      "category": "Coffee",
+      "appImage": "docs/images/products/lingzhi-coffee-2in1.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/FFB/CF/2in1.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=FFB",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-ZHI-MOCHA-20",
+      "name": "Zhi Mocha Premium",
+      "category": "Coffee",
+      "appImage": "docs/images/products/zhi-mocha-premium.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/FFB/CF/zhimocha.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=FFB",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-LZC-LITE-20",
+      "name": "Lingzhi Coffee Lite",
+      "category": "Coffee",
+      "appImage": "docs/images/products/lingzhi-coffee-lite.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/FFB/CF/lite.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=FFB",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-RGGL-90",
+      "name": "RG/GL Capsules (90s Duo)",
+      "category": "Supplements",
+      "appImage": "docs/images/products/rggl-capsules-90.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/HDS/GN/rg.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=HF",
+      "sourceName": "DXN2U (DXN official product catalogue); composite of RG-90 and GL-90 photos"
+    },
+    {
+      "sku": "DXN-MORINZHI-500",
+      "name": "Morinzhi Pure Noni (500ml)",
+      "category": "Supplements",
+      "appImage": "docs/images/products/morinzhi-pure-noni.jpg",
+      "sourceImage": "https://dxncanada.ca/wp-content/uploads/2025/06/morinzhi.png",
+      "sourcePage": "https://dxncanada.ca/product/morinzhi/",
+      "sourceName": "DXN Canada official product page"
+    },
+    {
+      "sku": "DXN-SPIRULINA-120",
+      "name": "Spirulina Tablets (120s)",
+      "category": "Supplements",
+      "appImage": "docs/images/products/spirulina-tablets-120.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/HDS/SH/spirulina_tablet.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=HF",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-ANDRO-90",
+      "name": "Andro-G Capsules (90s)",
+      "category": "Supplements",
+      "appImage": "docs/images/products/andro-g-capsules-90.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/HDS/SH/androg1.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=HF",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-LZC-TEA-25",
+      "name": "Lingzhi Black Tea Blend",
+      "category": "Coffee",
+      "appImage": "docs/images/products/lingzhi-black-tea.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/FFB/TE/FB341_DXN_Lingzhi_BlackTea.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=FFB",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-TOOTHPASTE-120",
+      "name": "Ganozhi Ganoderma Toothpaste",
+      "category": "Personal Care",
+      "appImage": "docs/images/products/ganozhi-toothpaste.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/PCC/PC/ganozhiplus-toothpaste.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=PC",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-SOAP-GANO",
+      "name": "Ganozhi Beauty Soap",
+      "category": "Personal Care",
+      "appImage": "docs/images/products/ganozhi-beauty-soap.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/PCC/PC/PC073_Ganozhi_Trans_Soap.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=PC",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    },
+    {
+      "sku": "DXN-SHAMPOO-GANO",
+      "name": "Ganozhi Nourishing Shampoo",
+      "category": "Personal Care",
+      "appImage": "docs/images/products/ganozhi-shampoo.jpg",
+      "sourceImage": "https://www.dxn2u.com/product/images/PCC/PC/shampoo.jpg",
+      "sourcePage": "https://www.dxn2u.com/product/products.php?cat_id=PC",
+      "sourceName": "DXN2U (DXN official product catalogue)"
+    }
+  ]
+}

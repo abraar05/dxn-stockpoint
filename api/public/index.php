@@ -71,7 +71,7 @@ $router->get('/api/v1/sync/status', static fn () => SyncController::status());
 if (in_array(Request::path(), ['/', '/index.php'], true)) {
     Response::json([
         'success'   => true,
-        'service'   => 'DXN Stockpoint API',
+        'service'   => 'Mohammadpur Stock Point API',
         'version'   => \DXN\Config::get('version'),
         'installed' => \DXN\Config::installed(),
         'endpoints' => [

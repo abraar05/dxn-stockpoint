@@ -197,29 +197,192 @@ final class Schema
             }
         }
 
+        self::backfillArtwork();
+
         foreach (self::defaultSettings() as $key => $value) {
             if (Store::setting($key) === null) {
                 Store::putSetting($key, $value, false);
             }
         }
+
+        self::backfillBranding();
     }
+
+    /**
+     * Older installations seeded the placeholder "DXN Stockpoint Central"
+     * profile. Move only untouched placeholder values to the Mohammadpur
+     * profile; a shopkeeper's own branch name, number or address is preserved.
+     */
+    private static function backfillBranding(): void
+    {
+        $replacements = [
+            'branch_name' => [
+                'old' => ['DXN Stockpoint Central', 'DXN Stockpoint'],
+                'new' => 'Mohammadpur Stock Point',
+            ],
+            'whatsapp_number' => [
+                'old' => ['8801987851131'],
+                'new' => '8801939994578',
+            ],
+            'receipt_footer' => [
+                'old' => ['Thank you for choosing DXN!', 'Thank you for choosing DXN. Wealth through health.'],
+                'new' => 'Thank you for choosing Mohammadpur Stock Point. Wealth through health.',
+            ],
+            'business_address' => [
+                'old' => [''],
+                'new' => 'H # 1, R # 11, B # A, Chandrima Model Town, Dhaka-1207',
+            ],
+            'business_phone' => [
+                'old' => [''],
+                'new' => '01939994578',
+            ],
+        ];
+
+        foreach ($replacements as $key => $migration) {
+            $current = Store::setting($key);
+            if ($current === null || !in_array($current, $migration['old'], true)) {
+                continue;
+            }
+            Store::putSetting($key, $migration['new'], true);
+        }
+    }
+
+    /**
+     * Existing shops that were seeded before product photography existed get
+     * the bundled photos on the next install/upgrade run. Only empty columns
+     * are touched, so a shopkeeper's own image URLs are never overwritten.
+     */
+    private static function backfillArtwork(): void
+    {
+        foreach (self::products() as $product) {
+            $row = Database::one(
+                'SELECT id, image_url, description FROM products WHERE sku = ?',
+                [$product['sku']]
+            );
+            if ($row === null) {
+                continue;
+            }
+            $needsImage = empty($row['image_url']);
+            $needsDescription = empty($row['description']);
+            if (!$needsImage && !$needsDescription) {
+                continue;
+            }
+            Database::run(
+                'UPDATE products SET image_url = ?, description = ?, updated_at = ?, rev = ? WHERE id = ?',
+                [
+                    $needsImage ? ($product['image_url'] ?? null) : $row['image_url'],
+                    $needsDescription ? ($product['description'] ?? null) : $row['description'],
+                    Util::now(),
+                    Store::nextRev(),
+                    $row['id'],
+                ]
+            );
+        }
+    }
+
+    /** Public location of the product photography bundled with the web app. */
+    private const IMAGE_BASE = 'https://abraar05.github.io/dxn-stockpoint/images/products/';
 
     /** @return array<int,array<string,mixed>> */
     public static function products(): array
     {
         return [
-            ['sku' => 'DXN-LZC-3IN1-20',  'name' => 'Lingzhi Coffee 3-in-1',           'category' => 'Coffee',        'retail_price' => 45.00,  'member_price' => 35.00,  'pv_points' => 24.0,  'stock_qty' => 120],
-            ['sku' => 'DXN-LZC-2IN1-20',  'name' => 'Lingzhi Coffee 2-in-1',           'category' => 'Coffee',        'retail_price' => 42.00,  'member_price' => 33.00,  'pv_points' => 22.0,  'stock_qty' => 80],
-            ['sku' => 'DXN-ZHI-MOCHA-20', 'name' => 'Zhi Mocha Premium',               'category' => 'Coffee',        'retail_price' => 50.00,  'member_price' => 40.00,  'pv_points' => 26.0,  'stock_qty' => 60],
-            ['sku' => 'DXN-LZC-LITE-20',  'name' => 'Lingzhi Coffee Lite',             'category' => 'Coffee',        'retail_price' => 40.00,  'member_price' => 31.00,  'pv_points' => 20.0,  'stock_qty' => 55],
-            ['sku' => 'DXN-RGGL-90',      'name' => 'RG/GL Capsules (90s Duo)',        'category' => 'Supplements',   'retail_price' => 220.00, 'member_price' => 170.00, 'pv_points' => 115.0, 'stock_qty' => 40],
-            ['sku' => 'DXN-MORINZHI-500', 'name' => 'Morinzhi Pure Noni (500ml)',      'category' => 'Supplements',   'retail_price' => 90.00,  'member_price' => 70.00,  'pv_points' => 46.0,  'stock_qty' => 30],
-            ['sku' => 'DXN-SPIRULINA-120','name' => 'Spirulina Tablets (120s)',        'category' => 'Supplements',   'retail_price' => 75.00,  'member_price' => 58.00,  'pv_points' => 38.0,  'stock_qty' => 50],
-            ['sku' => 'DXN-ANDRO-90',     'name' => 'Andro-G Capsules (90s)',          'category' => 'Supplements',   'retail_price' => 65.00,  'member_price' => 50.00,  'pv_points' => 33.0,  'stock_qty' => 35],
-            ['sku' => 'DXN-LZC-TEA-25',   'name' => 'Lingzhi Black Tea Blend',         'category' => 'Coffee',        'retail_price' => 38.00,  'member_price' => 29.00,  'pv_points' => 19.0,  'stock_qty' => 3],
-            ['sku' => 'DXN-TOOTHPASTE-120','name' => 'Ganozhi Ganoderma Toothpaste',   'category' => 'Personal Care', 'retail_price' => 28.00,  'member_price' => 22.00,  'pv_points' => 14.0,  'stock_qty' => 75],
-            ['sku' => 'DXN-SOAP-GANO',    'name' => 'Ganozhi Beauty Soap',             'category' => 'Personal Care', 'retail_price' => 18.00,  'member_price' => 14.00,  'pv_points' => 9.0,   'stock_qty' => 2],
-            ['sku' => 'DXN-SHAMPOO-GANO', 'name' => 'Ganozhi Nourishing Shampoo',      'category' => 'Personal Care', 'retail_price' => 35.00,  'member_price' => 27.00,  'pv_points' => 17.0,  'stock_qty' => 25],
+            [
+                'sku' => 'DXN-LZC-3IN1-20',
+                'name' => 'Lingzhi Coffee 3-in-1',
+                'category' => 'Coffee',
+                'description' => 'The classic DXN coffee: premium instant coffee blended with Ganoderma lucidum extract, sugar and non-dairy creamer. 20 sachets.',
+                'retail_price' => 45.00, 'member_price' => 35.00, 'pv_points' => 24.0, 'stock_qty' => 120,
+                'image_url' => self::IMAGE_BASE . 'lingzhi-coffee-3in1.jpg',
+            ],
+            [
+                'sku' => 'DXN-LZC-2IN1-20',
+                'name' => 'Lingzhi Coffee 2-in-1',
+                'category' => 'Coffee',
+                'description' => 'DXN Lingzhi Coffee 2-in-1 without added sugar — smooth coffee with the goodness of Ganoderma. 20 sachets.',
+                'retail_price' => 42.00, 'member_price' => 33.00, 'pv_points' => 22.0, 'stock_qty' => 80,
+                'image_url' => self::IMAGE_BASE . 'lingzhi-coffee-2in1.jpg',
+            ],
+            [
+                'sku' => 'DXN-ZHI-MOCHA-20',
+                'name' => 'Zhi Mocha Premium',
+                'category' => 'Coffee',
+                'description' => 'A rich mocha blend of coffee, cocoa and Ganoderma extract for a café-style cup at home.',
+                'retail_price' => 50.00, 'member_price' => 40.00, 'pv_points' => 26.0, 'stock_qty' => 60,
+                'image_url' => self::IMAGE_BASE . 'zhi-mocha-premium.jpg',
+            ],
+            [
+                'sku' => 'DXN-LZC-LITE-20',
+                'name' => 'Lingzhi Coffee Lite',
+                'category' => 'Coffee',
+                'description' => 'A lighter, creamier Lingzhi coffee with reduced sugar for an everyday cup.',
+                'retail_price' => 40.00, 'member_price' => 31.00, 'pv_points' => 20.0, 'stock_qty' => 55,
+                'image_url' => self::IMAGE_BASE . 'lingzhi-coffee-lite.jpg',
+            ],
+            [
+                'sku' => 'DXN-RGGL-90',
+                'name' => 'RG/GL Capsules (90s Duo)',
+                'category' => 'Supplements',
+                'description' => 'Reishi Gano (RG) and Ganocelium (GL) capsules — the two cornerstone DXN Ganoderma supplements, 90 capsules each.',
+                'retail_price' => 220.00, 'member_price' => 170.00, 'pv_points' => 115.0, 'stock_qty' => 40,
+                'image_url' => self::IMAGE_BASE . 'rggl-capsules-90.jpg',
+            ],
+            [
+                'sku' => 'DXN-MORINZHI-500',
+                'name' => 'Morinzhi Pure Noni (500ml)',
+                'category' => 'Supplements',
+                'description' => 'DXN Morinzhi botanical beverage made from noni (Morinda citrifolia) and roselle. Serve chilled.',
+                'retail_price' => 90.00, 'member_price' => 70.00, 'pv_points' => 46.0, 'stock_qty' => 30,
+                'image_url' => self::IMAGE_BASE . 'morinzhi-pure-noni.jpg',
+            ],
+            [
+                'sku' => 'DXN-SPIRULINA-120',
+                'name' => 'Spirulina Tablets (120s)',
+                'category' => 'Supplements',
+                'description' => 'DXN Spirulina tablets — a natural source of phytonutrients, cultivated and tableted by DXN.',
+                'retail_price' => 75.00, 'member_price' => 58.00, 'pv_points' => 38.0, 'stock_qty' => 50,
+                'image_url' => self::IMAGE_BASE . 'spirulina-tablets-120.jpg',
+            ],
+            [
+                'sku' => 'DXN-ANDRO-90',
+                'name' => 'Andro-G Capsules (90s)',
+                'category' => 'Supplements',
+                'description' => 'DXN Andro-G capsules containing Andrographis paniculata extract. 90 capsules.',
+                'retail_price' => 65.00, 'member_price' => 50.00, 'pv_points' => 33.0, 'stock_qty' => 35,
+                'image_url' => self::IMAGE_BASE . 'andro-g-capsules-90.jpg',
+            ],
+            [
+                'sku' => 'DXN-LZC-TEA-25',
+                'name' => 'Lingzhi Black Tea Blend',
+                'category' => 'Coffee',
+                'description' => 'DXN Lingzhi Black Tea — a smooth black tea enriched with Ganoderma extract.',
+                'retail_price' => 38.00, 'member_price' => 29.00, 'pv_points' => 19.0, 'stock_qty' => 3,
+                'image_url' => self::IMAGE_BASE . 'lingzhi-black-tea.jpg',
+            ],
+            [
+                'sku' => 'DXN-TOOTHPASTE-120',
+                'name' => 'Ganozhi Ganoderma Toothpaste',
+                'category' => 'Personal Care',
+                'description' => 'Ganozhi Plus toothpaste with Ganoderma extract for everyday oral care.',
+                'retail_price' => 28.00, 'member_price' => 22.00, 'pv_points' => 14.0, 'stock_qty' => 75,
+                'image_url' => self::IMAGE_BASE . 'ganozhi-toothpaste.jpg',
+            ],
+            [
+                'sku' => 'DXN-SOAP-GANO',
+                'name' => 'Ganozhi Beauty Soap',
+                'category' => 'Personal Care',
+                'description' => 'Ganozhi translucent beauty soap with Ganoderma extract and moisturisers.',
+                'retail_price' => 18.00, 'member_price' => 14.00, 'pv_points' => 9.0, 'stock_qty' => 2,
+                'image_url' => self::IMAGE_BASE . 'ganozhi-beauty-soap.jpg',
+            ],
+            [
+                'sku' => 'DXN-SHAMPOO-GANO',
+                'name' => 'Ganozhi Nourishing Shampoo',
+                'category' => 'Personal Care',
+                'description' => 'Ganozhi nourishing shampoo with Ganoderma extract for soft, healthy-looking hair.',
+                'retail_price' => 35.00, 'member_price' => 27.00, 'pv_points' => 17.0, 'stock_qty' => 25,
+                'image_url' => self::IMAGE_BASE . 'ganozhi-shampoo.jpg',
+            ],
         ];
     }
 
@@ -227,13 +390,13 @@ final class Schema
     public static function defaultSettings(): array
     {
         return [
-            'branch_name'         => 'DXN Stockpoint Central',
-            'whatsapp_number'     => '8801987851131',
+            'branch_name'         => 'Mohammadpur Stock Point',
+            'whatsapp_number'     => '8801939994578',
             'currency'            => 'BDT',
             'low_stock_threshold' => '5',
-            'receipt_footer'      => 'Thank you for choosing DXN!',
-            'business_address'    => '',
-            'business_phone'      => '',
+            'receipt_footer'      => 'Thank you for choosing Mohammadpur Stock Point. Wealth through health.',
+            'business_address'    => 'H # 1, R # 11, B # A, Chandrima Model Town, Dhaka-1207',
+            'business_phone'      => '01939994578',
             'allow_public_orders' => '1',
         ];
     }

@@ -198,7 +198,7 @@ const SEP = '-'.repeat(32);
 export function receiptText(order, settings = {}) {
   const currency = settings.currency || 'BDT';
   const lines = [];
-  lines.push(String(settings.branch_name || 'DXN Stockpoint').toUpperCase());
+  lines.push(String(settings.branch_name || 'Mohammadpur Stock Point').toUpperCase());
   if (settings.business_address) lines.push(String(settings.business_address));
   if (settings.business_phone) lines.push(`Tel: ${settings.business_phone}`);
   lines.push(SEP);
@@ -230,7 +230,7 @@ export function receiptText(order, settings = {}) {
 export function orderMessage(order, settings = {}) {
   const currency = settings.currency || 'BDT';
   const lines = [];
-  lines.push(`*${settings.branch_name || 'DXN Stockpoint'}*`);
+  lines.push(`*${settings.branch_name || 'Mohammadpur Stock Point'}*`);
   lines.push(`Order ${order.order_number}`);
   if (order.created_at) lines.push(fmtDateTime(order.created_at));
   lines.push('');

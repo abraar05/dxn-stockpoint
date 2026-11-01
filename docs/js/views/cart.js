@@ -15,8 +15,10 @@ const PAYMENTS = ['CASH', 'BKASH', 'NAGAD', 'CARD', 'BANK TRANSFER'];
 function lineRow(line) {
   const currency = store.currency();
   const atMax = line.qty >= line.available;
+  const photo = store.imageFor(line.product);
   return `
     <div class="cart-row" data-line="${line.productId}">
+      ${photo ? `<img class="cart-row__thumb" src="${esc(photo)}" alt="" loading="lazy" decoding="async" onerror="this.remove()">` : ''}
       <div class="cart-row__main">
         <div class="cart-row__name">${esc(line.product.name)}</div>
         <div class="cart-row__meta">${money(line.price, currency)} each · ${line.linePv ? `${line.linePv.toFixed(0)} PV` : 'no PV'}</div>
@@ -220,7 +222,7 @@ function bindFoot(foot) {
     if (!totals.lines.length) return;
     const currency = store.currency();
     const lines = [
-      `*${store.state.settings.branch_name || 'DXN Stockpoint'}* — quotation`,
+      `*${store.state.settings.branch_name || 'Mohammadpur Stock Point'}* — quotation`,
       '',
       ...totals.lines.map((l) => `• ${l.product.name} × ${l.qty} — ${money(l.lineTotal, currency)}`),
       '',

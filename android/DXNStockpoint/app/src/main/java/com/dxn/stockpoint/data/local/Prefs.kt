@@ -20,7 +20,10 @@ object Prefs {
 
     /** Emulator loopback. A real phone points this at the InfinityFree domain. */
     const val DEFAULT_BASE_URL = "http://10.0.2.2:8099/"
-    const val DEFAULT_WA_PHONE = "8801987851131"
+    const val DEFAULT_WA_PHONE = "8801939994578"
+
+    /** Default shipped before the Mohammadpur rebrand; silently migrated below. */
+    private const val LEGACY_WA_PHONE = "8801987851131"
 
     private var prefs: SharedPreferences? = null
 
@@ -46,7 +49,15 @@ object Prefs {
         set(value) = p().edit().putString(KEY_TOKEN_EXP, value).apply()
 
     var waPhone: String
-        get() = p().getString(KEY_WA_PHONE, DEFAULT_WA_PHONE) ?: DEFAULT_WA_PHONE
+        get() {
+            val stored = p().getString(KEY_WA_PHONE, null) ?: return DEFAULT_WA_PHONE
+            if (stored == LEGACY_WA_PHONE) {
+                // Lost in the rebrand? Upgrade the untouched default in place.
+                p().edit().putString(KEY_WA_PHONE, DEFAULT_WA_PHONE).apply()
+                return DEFAULT_WA_PHONE
+            }
+            return stored
+        }
         set(value) = p().edit().putString(KEY_WA_PHONE, value).apply()
 
     /** "member" or "retail" — the last pricing tier the shopkeeper used. */

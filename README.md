@@ -1,14 +1,14 @@
-# DXN Stockpoint v2.0.1 🛒
+# Mohammadpur Stock Point v2.1.0 🛒
 
-An offline-first stockpoint POS for DXN distributors — **one PHP API, two clients
-that stay in sync**: an installable web app and a native Android app. Everything
-runs on free, forever tiers: GitHub Pages, GitHub Releases, InfinityFree
-(PHP 8 + MySQL), and Google Play.
+An offline-first stockpoint POS for Mohammadpur Stock Point, a DXN distributor —
+**one PHP API, two clients that stay in sync**: an installable web app and a
+native Android app. Everything runs on free, forever tiers: GitHub Pages, GitHub
+Releases, InfinityFree (PHP 8 + MySQL), and Google Play.
 
 | | |
 |---|---|
 | 🌐 Web app | https://abraar05.github.io/dxn-stockpoint/ |
-| 📱 Android | GitHub Releases → `dxn-stockpoint-2.0.1-debug.apk` |
+| 📱 Android | GitHub Releases → `dxn-stockpoint-2.1.0-debug.apk` |
 | 🔌 API | InfinityFree — `https://<your-site>/api/v1/...` |
 | 🔒 Privacy | https://abraar05.github.io/dxn-stockpoint/privacy.html |
 
@@ -50,7 +50,7 @@ runs on free, forever tiers: GitHub Pages, GitHub Releases, InfinityFree
 | `api/` | PHP 8 API — no Composer, no framework, drop-in on shared hosting |
 | `docs/` | The web app (ES modules, no build step) + PWA manifest & service worker |
 | `android/DXNStockpoint/` | Kotlin + Jetpack Compose app |
-| `scripts/` | Local dev server, icon generator, toolchain provisioning, verification suites |
+| `scripts/` | Local dev server, toolchain provisioning, verification suites |
 | `.github/workflows/` | Pages deploy, InfinityFree FTP deploy, APK/AAB build |
 
 > `backend/` is the retired v1 Node/SQLite server. It is kept for reference only;

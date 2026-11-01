@@ -1,10 +1,10 @@
-# Privacy Policy — DXN Stockpoint POS
+# Privacy Policy — Mohammadpur Stock Point POS
 
-**Last updated:** 31 October 2026
+**Last updated:** 1 November 2026
 **Applies to:** the Android app (`com.dxn.stockpoint`) and the web app at
 <https://abraar05.github.io/dxn-stockpoint/>
 
-DXN Stockpoint is a point-of-sale and stock-control tool for a single DXN
+Mohammadpur Stock Point is a point-of-sale and stock-control tool for a single DXN
 distributor's shop. It is not a consumer social app: it records the sales the
 shopkeeper enters, and nothing else.
 

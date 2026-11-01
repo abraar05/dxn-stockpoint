@@ -176,7 +176,7 @@ function aboutCard() {
   return `
     <div class="card card--pad">
       <div class="section-head" style="margin-bottom:12px">
-        <div><h2 style="font-size:15px">About</h2><p>DXN Stockpoint 2.0 — one codebase, two clients.</p></div>
+        <div><h2 style="font-size:15px">About</h2><p>Mohammadpur Stock Point 2.1 — one codebase, two clients.</p></div>
       </div>
       <div class="list">
         <div class="list__row"><div class="list__main">
@@ -307,7 +307,7 @@ function bind(root) {
   root.querySelector('#saveProfileBtn')?.addEventListener('click', async (event) => {
     const button = event.currentTarget;
     const patch = {
-      branch_name: root.querySelector('#setBranch').value.trim() || 'DXN Stockpoint',
+      branch_name: root.querySelector('#setBranch').value.trim() || 'Mohammadpur Stock Point',
       whatsapp_number: digits(root.querySelector('#setWa').value),
       currency: (root.querySelector('#setCurrency').value || 'BDT').trim().toUpperCase().slice(0, 8),
       business_phone: root.querySelector('#setPhone').value.trim(),

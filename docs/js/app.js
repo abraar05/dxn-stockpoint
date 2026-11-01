@@ -37,7 +37,7 @@ function updateChrome() {
   const route = currentRoute();
 
   const branch = $('#branchName');
-  if (branch) branch.textContent = settings.branch_name || 'DXN Stockpoint';
+  if (branch) branch.textContent = settings.branch_name || 'Mohammadpur Stock Point';
 
   const tag = $('#branchTag');
   if (tag) {
@@ -72,7 +72,7 @@ function updateChrome() {
   const bar = $('#offlineBar');
   if (bar) bar.classList.toggle('is-visible', !navigator.onLine || syncState === 'offline');
 
-  document.title = `${settings.branch_name || 'DXN Stockpoint'} — ${outbox.length ? `(${outbox.length} queued) ` : ''}POS`;
+  document.title = `${settings.branch_name || 'Mohammadpur Stock Point'} — ${outbox.length ? `(${outbox.length} queued) ` : ''}POS`;
 
   if (isCartOpen()) renderCart($('#cartBody'), $('#cartFoot'));
 }
@@ -146,6 +146,7 @@ function openLogin() {
   openModal({
     title: 'Shop sign-in',
     body: `
+      <img class="about-logo" src="icons/logo-full.png" alt="Mohammadpur Stock Point" width="320" height="320">
       <form id="loginForm" autocomplete="off">
         <label class="field"><span>Shop PIN</span>
           <input class="input" id="pinInput" type="password" inputmode="numeric" autocomplete="current-password"
@@ -195,10 +196,11 @@ function openAccount() {
   openModal({
     title: isAdmin ? 'Shop account' : 'Account',
     body: `
+      <img class="about-logo" src="icons/logo-full.png" alt="Mohammadpur Stock Point" width="320" height="320">
       <div class="list">
         <div class="list__row">
           <div class="list__main">
-            <div class="list__title">${esc(settings.branch_name || 'DXN Stockpoint')}</div>
+            <div class="list__title">${esc(settings.branch_name || 'Mohammadpur Stock Point')}</div>
             <div class="list__sub">${isAdmin ? 'Admin unlocked on this device' : 'Browsing as a customer'}</div>
           </div>
           <span class="badge badge--${isAdmin ? 'ok' : 'muted'}">${isAdmin ? 'Admin' : 'Viewer'}</span>

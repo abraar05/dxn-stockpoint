@@ -1,6 +1,7 @@
 package com.dxn.stockpoint.ui.components
 
 import androidx.compose.animation.core.*
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
@@ -8,6 +9,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.Inventory2
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -16,12 +18,63 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import com.dxn.stockpoint.R
 import com.dxn.stockpoint.data.model.Product
 import com.dxn.stockpoint.ui.theme.*
+
+// ── Product Photography ───────────────────────────────────────────────────────
+
+/**
+ * Shows the bundled photo when we have one, otherwise a remote `image_url`
+ * (for products added by the shopkeeper), otherwise a neutral placeholder.
+ */
+@Composable
+fun ProductThumb(
+    product: Product,
+    modifier: Modifier = Modifier,
+    cornerRadius: Dp = 14.dp
+) {
+    val bundled = ProductArtwork.forSku(product.sku)
+    Box(
+        modifier = modifier
+            .clip(RoundedCornerShape(cornerRadius))
+            .background(Color.White),
+        contentAlignment = Alignment.Center
+    ) {
+        when {
+            bundled != null -> Image(
+                painter = painterResource(bundled),
+                contentDescription = product.name,
+                contentScale = ContentScale.Fit,
+                modifier = Modifier.fillMaxSize().padding(6.dp)
+            )
+
+            !product.imageUrl.isNullOrBlank() -> AsyncImage(
+                model = product.imageUrl,
+                contentDescription = product.name,
+                contentScale = ContentScale.Fit,
+                error = painterResource(R.drawable.logo_mark),
+                placeholder = painterResource(R.drawable.logo_mark),
+                modifier = Modifier.fillMaxSize().padding(6.dp)
+            )
+
+            else -> Icon(
+                imageVector = Icons.Default.Inventory2,
+                contentDescription = null,
+                tint = ForestGreen.copy(alpha = 0.45f),
+                modifier = Modifier.size(32.dp)
+            )
+        }
+    }
+}
 
 // ── Glassmorphic Product Card ─────────────────────────────────────────────────
 
@@ -42,6 +95,16 @@ fun GlassmorphicProductCard(
             .padding(16.dp)
     ) {
         Column(modifier = Modifier.fillMaxWidth()) {
+
+            ProductThumb(
+                product = product,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(150.dp),
+                cornerRadius = 18.dp
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
 
             // Top row: category + stock badge + PV badge
             Row(
@@ -197,7 +260,7 @@ fun ProductCardSkeleton() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(110.dp)
+            .height(300.dp)
             .clip(RoundedCornerShape(24.dp))
             .background(Color.LightGray.copy(alpha = alpha))
     )

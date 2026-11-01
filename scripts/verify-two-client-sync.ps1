@@ -46,7 +46,7 @@ function Post-Json([string]$path, $body, [string]$token = '') {
     }
 }
 
-Write-Host "`nDXN Stockpoint — two-client live-sync check against $Base`n"
+Write-Host "`nMohammadpur Stock Point — two-client live-sync check against $Base`n"
 
 # ── Baseline: what a client sees on first install ───────────────────────────
 $sync0 = Get-Json '/api/v1/sync?since=0'

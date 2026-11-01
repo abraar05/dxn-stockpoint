@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 /**
- * DXN Stockpoint API configuration.
+ * Mohammadpur Stock Point API configuration.
  *
  * Copy this file to `config/config.php` on the server and fill in the values
  * from your InfinityFree control panel (MySQL Databases). `config.php` is
@@ -50,5 +50,5 @@ return [
     'timezone' => 'UTC',
     'debug'    => false,
     'trust_proxy' => true,
-    'version'  => '2.0.0',
+    'version'  => '2.1.0',
 ];

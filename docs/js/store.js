@@ -17,6 +17,41 @@ const SESSION_KEY = 'dxn.session.v2';
 const POLL_MS = 15000;
 const MAX_ORDERS = 400;
 
+/**
+ * Product photography bundled with the app so the catalogue looks right even
+ * on the first offline launch. Files live in docs/images/products/ and the
+ * original source URLs are recorded in docs/images/products/sources.json.
+ */
+export const PRODUCT_IMAGES = {
+  'DXN-LZC-3IN1-20': 'images/products/lingzhi-coffee-3in1.jpg',
+  'DXN-LZC-2IN1-20': 'images/products/lingzhi-coffee-2in1.jpg',
+  'DXN-ZHI-MOCHA-20': 'images/products/zhi-mocha-premium.jpg',
+  'DXN-LZC-LITE-20': 'images/products/lingzhi-coffee-lite.jpg',
+  'DXN-RGGL-90': 'images/products/rggl-capsules-90.jpg',
+  'DXN-MORINZHI-500': 'images/products/morinzhi-pure-noni.jpg',
+  'DXN-SPIRULINA-120': 'images/products/spirulina-tablets-120.jpg',
+  'DXN-ANDRO-90': 'images/products/andro-g-capsules-90.jpg',
+  'DXN-LZC-TEA-25': 'images/products/lingzhi-black-tea.jpg',
+  'DXN-TOOTHPASTE-120': 'images/products/ganozhi-toothpaste.jpg',
+  'DXN-SOAP-GANO': 'images/products/ganozhi-beauty-soap.jpg',
+  'DXN-SHAMPOO-GANO': 'images/products/ganozhi-shampoo.jpg',
+};
+
+const PRODUCT_DESCRIPTIONS = {
+  'DXN-LZC-3IN1-20': 'The classic DXN coffee: premium instant coffee blended with Ganoderma lucidum extract, sugar and non-dairy creamer. 20 sachets.',
+  'DXN-LZC-2IN1-20': 'DXN Lingzhi Coffee 2-in-1 without added sugar — smooth coffee with the goodness of Ganoderma. 20 sachets.',
+  'DXN-ZHI-MOCHA-20': 'A rich mocha blend of coffee, cocoa and Ganoderma extract for a café-style cup at home.',
+  'DXN-LZC-LITE-20': 'A lighter, creamier Lingzhi coffee with reduced sugar for an everyday cup.',
+  'DXN-RGGL-90': 'Reishi Gano (RG) and Ganocelium (GL) capsules — the two cornerstone DXN Ganoderma supplements, 90 capsules each.',
+  'DXN-MORINZHI-500': 'DXN Morinzhi botanical beverage made from noni (Morinda citrifolia) and roselle. Serve chilled.',
+  'DXN-SPIRULINA-120': 'DXN Spirulina tablets — a natural source of phytonutrients, cultivated and tableted by DXN.',
+  'DXN-ANDRO-90': 'DXN Andro-G capsules containing Andrographis paniculata extract. 90 capsules.',
+  'DXN-LZC-TEA-25': 'DXN Lingzhi Black Tea — a smooth black tea enriched with Ganoderma extract.',
+  'DXN-TOOTHPASTE-120': 'Ganozhi Plus toothpaste with Ganoderma extract for everyday oral care.',
+  'DXN-SOAP-GANO': 'Ganozhi translucent beauty soap with Ganoderma extract and moisturisers.',
+  'DXN-SHAMPOO-GANO': 'Ganozhi nourishing shampoo with Ganoderma extract for soft, healthy-looking hair.',
+};
+
 /** Shown on a cold start so the shop is never staring at an empty screen. */
 const SEED_PRODUCTS = [
   ['DXN-LZC-3IN1-20', 'Lingzhi Coffee 3-in-1', 'Coffee', 45, 35, 24, 120],
@@ -36,29 +71,69 @@ const SEED_PRODUCTS = [
   sku,
   name,
   category,
-  description: null,
+  description: PRODUCT_DESCRIPTIONS[sku] || null,
   retail_price: retail,
   member_price: member,
   pv_points: pv,
   stock_qty: stock,
   low_stock_at: 5,
-  image_url: null,
+  image_url: PRODUCT_IMAGES[sku] || null,
   is_active: 1,
   created_at: null,
   updated_at: null,
   rev: 0,
 }));
 
+/** Fills in bundled artwork/descriptions when the server row has none. */
+function decorateProduct(product) {
+  if (!product) return product;
+  return {
+    ...product,
+    image_url: product.image_url || PRODUCT_IMAGES[product.sku] || null,
+    description: product.description || PRODUCT_DESCRIPTIONS[product.sku] || null,
+  };
+}
+
+/** Absolute URL for a product photo, safe for API rows and bundled files. */
+export function imageFor(product) {
+  if (!product) return null;
+  const raw = product.image_url || PRODUCT_IMAGES[product.sku] || null;
+  if (!raw) return null;
+  try {
+    return new URL(raw, document.baseURI).href;
+  } catch {
+    return raw;
+  }
+}
+
 const DEFAULT_SETTINGS = {
-  branch_name: 'DXN Stockpoint',
-  whatsapp_number: '',
+  branch_name: 'Mohammadpur Stock Point',
+  whatsapp_number: '8801939994578',
   currency: 'BDT',
   low_stock_threshold: 5,
-  receipt_footer: 'Thank you for choosing DXN. Wealth through health.',
-  business_address: '',
-  business_phone: '',
+  receipt_footer: 'Thank you for choosing Mohammadpur Stock Point. Wealth through health.',
+  business_address: 'H # 1, R # 11, B # A, Chandrima Model Town, Dhaka-1207',
+  business_phone: '01939994578',
   allow_public_orders: 1,
 };
+
+/** Placeholder profile shipped before the Mohammadpur rebrand. */
+const LEGACY_SETTINGS = {
+  branch_name: ['DXN Stockpoint', 'DXN Stockpoint Central'],
+  whatsapp_number: ['8801987851131'],
+  receipt_footer: ['Thank you for choosing DXN!', 'Thank you for choosing DXN. Wealth through health.'],
+  business_address: [''],
+  business_phone: [''],
+};
+
+/** Fills the new shop profile over untouched placeholder values only. */
+function withDefaults(settings) {
+  const merged = { ...DEFAULT_SETTINGS, ...(settings || {}) };
+  for (const [key, placeholders] of Object.entries(LEGACY_SETTINGS)) {
+    if (placeholders.includes(String(merged[key] ?? ''))) merged[key] = DEFAULT_SETTINGS[key];
+  }
+  return merged;
+}
 
 export const state = {
   ready: false,
@@ -176,11 +251,12 @@ export function hydrate() {
     state.products = Array.isArray(cache.products) ? cache.products : [];
     state.orders = Array.isArray(cache.orders) ? cache.orders : [];
     state.customers = Array.isArray(cache.customers) ? cache.customers : [];
-    state.settings = { ...DEFAULT_SETTINGS, ...(cache.settings || {}) };
+    state.settings = withDefaults(cache.settings);
     state.lastSyncAt = num(cache.savedAt);
   }
 
-  if (!state.products.length) state.products = SEED_PRODUCTS.map((p) => ({ ...p }));
+  state.products = state.products.map(decorateProduct);
+  if (!state.products.length) state.products = SEED_PRODUCTS.map((p) => decorateProduct({ ...p }));
 
   const savedCart = read(CART_KEY, null);
   if (savedCart) {
@@ -219,10 +295,10 @@ export function refreshFromStorage() {
   const cache = read(CACHE_KEY, null);
   if (!cache) return;
   state.rev = num(cache.rev);
-  state.products = Array.isArray(cache.products) ? cache.products : state.products;
+  state.products = (Array.isArray(cache.products) ? cache.products : state.products).map(decorateProduct);
   state.orders = Array.isArray(cache.orders) ? cache.orders : state.orders;
   state.customers = Array.isArray(cache.customers) ? cache.customers : state.customers;
-  state.settings = { ...DEFAULT_SETTINGS, ...(cache.settings || {}) };
+  state.settings = withDefaults(cache.settings);
   state.lastSyncAt = num(cache.savedAt) || state.lastSyncAt;
   const outbox = read(OUTBOX_KEY, null);
   if (Array.isArray(outbox)) state.outbox = outbox;
@@ -477,7 +553,7 @@ async function flushOutbox() {
 
 function mergeProducts(incoming) {
   const map = new Map(state.products.map((p) => [Number(p.id), p]));
-  for (const product of incoming) map.set(Number(product.id), product);
+  for (const product of incoming) map.set(Number(product.id), decorateProduct(product));
   state.products = sortBy([...map.values()], 'name');
 }
 
@@ -518,7 +594,7 @@ function applySync(payload) {
   if (Array.isArray(payload.customers) && payload.customers.length) mergeCustomers(payload.customers);
   if (payload.settings && typeof payload.settings === 'object') {
     const { admin_pin_hash, ...safe } = payload.settings;
-    state.settings = { ...state.settings, ...safe };
+    state.settings = withDefaults({ ...state.settings, ...safe });
   }
   state.rev = Math.max(state.rev, num(payload.server_rev));
 }
