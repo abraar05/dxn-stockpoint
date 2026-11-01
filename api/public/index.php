@@ -27,6 +27,7 @@ $router = new Router();
 // ── Service ─────────────────────────────────────────────────────────────────
 $router->get('/api/v1/health', static fn () => HealthController::index());
 $router->get('/api/v1/config', static fn () => HealthController::config());
+$router->get('/api/v1/migrate', static fn () => HealthController::migrate());
 $router->post('/api/v1/migrate', static fn () => HealthController::migrate());
 
 // ── Auth ────────────────────────────────────────────────────────────────────
