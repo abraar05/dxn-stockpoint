@@ -101,7 +101,8 @@ jobs:
             ### What is in this build
             - Connects out of the box — the live shop API (dxn.infy.click) is the built-in default
             - New Mohammadpur Stock Point logo, app icon and splash artwork
-            - Official DXN product photos for all 12 seeded products (bundled offline)
+            - The shop's full 2026 DXN price list: 51 SKUs with exact DP/PV/MRP
+            - Official DXN product photos for 47 SKUs (bundled offline; 4 use a generated tile)
             - Product image previews in the catalogue, cart and admin screens
             - Shop PIN sign-in (HMAC bearer token, 30-day expiry)
             - Offline-first: cached catalogue, queued sales, automatic replay
