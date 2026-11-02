@@ -12,8 +12,8 @@ android {
         applicationId = "com.dxn.stockpoint"
         minSdk = 26
         targetSdk = 35
-        versionCode = 6
-        versionName = "2.1.1"
+        versionCode = 7
+        versionName = "2.1.2"
     }
 
     // The release keystore comes from CI (env vars) or a local

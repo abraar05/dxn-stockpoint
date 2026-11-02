@@ -50,5 +50,5 @@ return [
     'timezone' => 'UTC',
     'debug'    => false,
     'trust_proxy' => true,
-    'version'  => '2.1.0',
+    'version'  => '2.1.2',
 ];

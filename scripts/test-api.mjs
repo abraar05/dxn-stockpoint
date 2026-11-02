@@ -178,9 +178,25 @@ async function main() {
 
     console.log('\nCatalogue');
     r = await request('/api/v1/products');
-    check('catalogue is seeded with 12 products', r.json?.products?.length === 12, r.json?.count);
+    check('catalogue is seeded with 51 products', r.json?.products?.length === 51, r.json?.count);
     const firstProduct = r.json.products[0];
     check('products expose both price tiers', firstProduct.retail_price > 0 && firstProduct.member_price > 0, firstProduct);
+    const coffee = r.json.products.find((p) => p.sku === 'DXN-LZC-3IN1-20');
+    check(
+      'seeded prices match the 2026 price list',
+      coffee?.retail_price === 2460 && coffee?.member_price === 2050 && coffee?.pv_points === 475,
+      coffee,
+    );
+    check(
+      'retired placeholder SKUs are hidden',
+      !r.json.products.some((p) => p.sku === 'DXN-RGGL-90' || p.sku === 'DXN-LZC-2IN1-20'),
+      r.json.products.map((p) => p.sku).filter((s) => s.startsWith('DXN-RGGL')),
+    );
+    check(
+      'seeded stock starts empty',
+      r.json.products.every((p) => p.stock_qty === 0),
+      r.json.products.filter((p) => p.stock_qty !== 0).map((p) => [p.sku, p.stock_qty]),
+    );
 
     r = await request('/api/v1/products', {
       method: 'POST',
@@ -312,7 +328,7 @@ async function main() {
     console.log('\nSync');
     r = await request('/api/v1/sync?since=0', { token });
     const serverRev = r.json?.server_rev;
-    check('full sync returns products', (r.json?.products?.length ?? 0) >= 13, r.json?.products?.length);
+    check('full sync returns products', (r.json?.products?.length ?? 0) === 52, r.json?.products?.length);
     check('full sync returns orders to admins', r.json?.orders?.length === 1, r.json?.orders?.length);
     check('sync exposes a server revision', typeof serverRev === 'number' && serverRev > 0, serverRev);
 
@@ -321,6 +337,42 @@ async function main() {
 
     r = await request('/api/v1/sync?since=0');
     check('anonymous sync only exposes the catalogue', (r.json?.orders?.length ?? -1) === 0 && r.json?.scope === 'public', r.json?.scope);
+
+    console.log('\nCatalogue upgrade');
+    const catalogue = (await request('/api/v1/products?include_inactive=1', { token })).json.products;
+    const coffeeId = catalogue.find((p) => p.sku === 'DXN-LZC-3IN1-20').id;
+    r = await request('/api/v1/stock/update', { method: 'POST', token, body: { productId: coffeeId, newQuantity: 120 } });
+    check('admin can set stock', r.status === 200 && r.json?.product?.stock_qty === 120, r.json?.product?.stock_qty);
+
+    r = await request('/api/v1/products', {
+      method: 'POST',
+      token,
+      body: {
+        sku: 'DXN-RGGL-90',
+        name: 'RG/GL Capsules (90s Duo)',
+        category: 'Supplements',
+        retail_price: 220,
+        member_price: 170,
+        pv_points: 115,
+        stock_qty: 40,
+      },
+    });
+    check('placeholder-era SKU can exist before the upgrade', r.status === 201, r.json);
+
+    const upgrade = spawnSync(php, [...flags, join(apiDir, 'bin', 'install.php')], {
+      cwd: root,
+      env,
+      encoding: 'utf8',
+    });
+    check('re-running the installer succeeds', upgrade.status === 0, upgrade.stderr || upgrade.stdout);
+
+    r = await request('/api/v1/products?include_inactive=1', { token });
+    const retired = r.json.products.find((p) => p.sku === 'DXN-RGGL-90');
+    check('retired SKU is deactivated, not deleted', retired?.is_active === 0, retired);
+    check('retired SKU is hidden from the catalogue', !(await request('/api/v1/products')).json.products.some((p) => p.sku === 'DXN-RGGL-90'));
+    const upgradedCoffee = r.json.products.find((p) => p.sku === 'DXN-LZC-3IN1-20');
+    check('fabricated opening stock is cleared', upgradedCoffee?.stock_qty === 0, upgradedCoffee?.stock_qty);
+    check('price refresh survives the upgrade', upgradedCoffee?.retail_price === 2460 && upgradedCoffee?.member_price === 2050, upgradedCoffee);
 
     console.log('\nHTTP behaviour');
     r = await request('/api/v1/nope');
