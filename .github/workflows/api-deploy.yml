@@ -1,16 +1,13 @@
 name: Deploy API (InfinityFree)
 
 # The PHP API is the single source of truth for both clients. This workflow
-# lints it on every push and, when DEPLOY_API is enabled, mirrors it over FTP
+# lints it on every push and mirrors it over FTP on main
 # into InfinityFree's htdocs.
 #
 # Required repository secrets:
 #   FTP_SERVER    e.g. ftpupload.net
 #   FTP_USERNAME  your InfinityFree account (if0_xxxxxxxx)
 #   FTP_PASSWORD  your InfinityFree account password
-#
-# Required repository variable:
-#   DEPLOY_API = true
 #
 # Resulting endpoints:  https://<your-subdomain>.infinityfreeapp.com/api/v1/...
 
@@ -54,6 +51,12 @@ jobs:
           DXN_DB_PATH: ${{ github.workspace }}/api/storage/ci.sqlite
         run: php api/bin/install.php --pin=4242
 
+      - name: Verify migration preserves inventory and order history
+        env:
+          DXN_DRIVER: sqlite
+          DXN_DB_PATH: ${{ github.workspace }}/api/storage/ci.sqlite
+        run: php scripts/test-catalog-migration.php
+
       - name: Boot the API and smoke-test the public surface
         env:
           DXN_DRIVER: sqlite
@@ -81,11 +84,31 @@ jobs:
 
             $health = $get("/health");
             $check("health returns success", is_array($health) && ($health["success"] ?? false) === true);
-            $check("health reports a version", isset($health["version"]));
+            $check("health reports version 2.1.2", ($health["version"] ?? null) === "2.1.2");
 
             $products = $get("/products");
             $check("catalogue is public", is_array($products) && ($products["success"] ?? false) === true);
-            $check("catalogue has seeded SKUs", count($products["products"] ?? []) >= 12);
+            $catalogRows = $products["products"] ?? [];
+            $check("catalogue has exactly 51 active products", count($catalogRows) === 51);
+            $check("catalogue SKUs are unique", count(array_unique(array_column($catalogRows, "sku"))) === 51);
+
+            $offlineProduct = $catalogRows[0] ?? [];
+            $offlineBody = @file_get_contents($base . "/orders", false, stream_context_create([
+                "http" => [
+                    "method" => "POST",
+                    "header" => "Content-Type: application/json\r\n",
+                    "content" => json_encode([
+                        "client_uuid" => "ci-offline-sku-replay-2-1-2",
+                        "customer_name" => "CI offline SKU replay",
+                        "is_member" => true,
+                        "items" => [["product_id" => -1001, "product_sku" => $offlineProduct["sku"] ?? "", "quantity" => 1]],
+                    ]),
+                    "ignore_errors" => true,
+                ],
+            ]));
+            $offlineOrder = json_decode((string) $offlineBody, true);
+            $offlineLine = $offlineOrder["order"]["items"][0] ?? null;
+            $check("offline temporary ID replays by SKU", ($offlineOrder["success"] ?? false) === true && is_array($offlineLine) && (int) ($offlineLine["product_id"] ?? 0) > 0 && ($offlineLine["sku"] ?? "") === ($offlineProduct["sku"] ?? ""));
 
             $sync = $get("/sync?since=0");
             $check("sync works without a token", is_array($sync) && ($sync["success"] ?? false) === true);
@@ -106,7 +129,7 @@ jobs:
   deploy:
     name: Mirror api/ to InfinityFree
     needs: lint
-    if: vars.DEPLOY_API == 'true' && github.ref == 'refs/heads/main'
+    if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
     environment: production
     steps:

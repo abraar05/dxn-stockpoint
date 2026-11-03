@@ -561,6 +561,7 @@ export function buildOrderPayload() {
     source: 'web',
     items: lines.map((line) => ({
       product_id: line.productId,
+      product_sku: line.product.sku,
       quantity: line.qty,
       unit_price: line.price,
       unit_pv: line.pv,

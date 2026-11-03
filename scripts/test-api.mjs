@@ -371,8 +371,19 @@ async function main() {
     check('retired SKU is deactivated, not deleted', retired?.is_active === 0, retired);
     check('retired SKU is hidden from the catalogue', !(await request('/api/v1/products')).json.products.some((p) => p.sku === 'DXN-RGGL-90'));
     const upgradedCoffee = r.json.products.find((p) => p.sku === 'DXN-LZC-3IN1-20');
-    check('fabricated opening stock is cleared', upgradedCoffee?.stock_qty === 0, upgradedCoffee?.stock_qty);
+    check('matching starter stock is preserved by upgrade', upgradedCoffee?.stock_qty === 120, upgradedCoffee?.stock_qty);
     check('price refresh survives the upgrade', upgradedCoffee?.retail_price === 2460 && upgradedCoffee?.member_price === 2050, upgradedCoffee);
+
+    r = await request('/api/v1/orders', {
+      method: 'POST',
+      body: {
+        client_uuid: 'offline-temporary-id-sku-replay',
+        customer_name: 'Offline SKU Replay',
+        is_member: true,
+        items: [{ product_id: -1001, product_sku: 'DXN-LZC-3IN1-20', quantity: 1 }],
+      },
+    });
+    check('offline temporary product ID resolves by SKU', r.status === 201 && r.json?.order?.items?.[0]?.product_id === coffeeId && r.json?.order?.items?.[0]?.sku === 'DXN-LZC-3IN1-20', r.json);
 
     console.log('\nHTTP behaviour');
     r = await request('/api/v1/nope');

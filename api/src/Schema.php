@@ -233,9 +233,8 @@ final class Schema
             );
         }
 
-        // Only an installation that still carries the retired placeholder
-        // catalogue needs the one-off stock reset/retirement. After the first
-        // upgrade these rows are inactive, so the block never runs again.
+        // Archive retired starter SKUs but never rewrite their inventory. A
+        // quantity that happened to equal an old demo seed can be real stock.
         $placeholders = implode(',', array_fill(0, count(self::LEGACY_SKUS), '?'));
         $legacyActive = (int) Database::scalar(
             "SELECT COUNT(*) FROM products WHERE sku IN ({$placeholders}) AND is_active = 1",
@@ -245,12 +244,6 @@ final class Schema
             return;
         }
 
-        foreach (self::LEGACY_SEED_STOCK as $sku => $qty) {
-            Database::run(
-                'UPDATE products SET stock_qty = 0, updated_at = ?, rev = ? WHERE sku = ? AND stock_qty = ?',
-                [Util::now(), Store::nextRev(), $sku, $qty]
-            );
-        }
         foreach (self::LEGACY_SKUS as $sku) {
             Database::run(
                 'UPDATE products SET is_active = 0, updated_at = ?, rev = ? WHERE sku = ?',
@@ -339,15 +332,6 @@ final class Schema
         'DXN-LZC-2IN1-20', 'DXN-RGGL-90', 'DXN-MORINZHI-500',
         'DXN-SPIRULINA-120', 'DXN-ANDRO-90', 'DXN-LZC-TEA-25',
     ];
-
-    /** Opening stock the placeholder catalogue was seeded with (fabricated). */
-    private const LEGACY_SEED_STOCK = [
-        'DXN-LZC-3IN1-20' => 120, 'DXN-LZC-2IN1-20' => 80, 'DXN-ZHI-MOCHA-20' => 60,
-        'DXN-LZC-LITE-20' => 55, 'DXN-RGGL-90' => 40, 'DXN-MORINZHI-500' => 30,
-        'DXN-SPIRULINA-120' => 50, 'DXN-ANDRO-90' => 35, 'DXN-LZC-TEA-25' => 3,
-        'DXN-TOOTHPASTE-120' => 75, 'DXN-SOAP-GANO' => 2, 'DXN-SHAMPOO-GANO' => 25,
-    ];
-
 
     /** @return array<int,array<string,mixed>> */
     public static function products(): array

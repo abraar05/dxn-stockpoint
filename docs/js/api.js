@@ -7,6 +7,7 @@
  */
 
 const BASE_KEY = 'dxn.apiBase.v2';
+const DEFAULT_BASE = 'https://dxn.infy.click';
 const TOKEN_KEY = 'dxn.token.v2';
 const TOKEN_META_KEY = 'dxn.tokenMeta.v2';
 
@@ -41,9 +42,9 @@ export function normalizeBase(input) {
 
 export function getBase() {
   try {
-    return localStorage.getItem(BASE_KEY) || '';
+    return localStorage.getItem(BASE_KEY) || DEFAULT_BASE;
   } catch {
-    return '';
+    return DEFAULT_BASE;
   }
 }
 

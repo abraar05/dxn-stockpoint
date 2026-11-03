@@ -81,12 +81,19 @@ final class OrderController
                     continue;
                 }
                 $productId = Util::int($item['product_id'] ?? $item['productId'] ?? 0);
+                $productSku = Util::clean($item['product_sku'] ?? $item['sku'] ?? '', 80);
                 $quantity = Util::int($item['quantity'] ?? 0);
-                if ($productId <= 0 || $quantity <= 0) {
+                if ($quantity <= 0 || ($productId <= 0 && $productSku === '')) {
                     continue;
                 }
 
-                $product = Store::product($productId);
+                // Offline clients may have temporary IDs; the stable SKU resolves after reconnect.
+                $product = $productSku !== ''
+                    ? Database::one('SELECT * FROM products WHERE sku = ?', [$productSku])
+                    : null;
+                if ($product === null && $productId > 0) {
+                    $product = Store::product($productId);
+                }
                 if ($product === null) {
                     throw new \DXN\ApiException("Product {$productId} not found", 404, 'product_missing');
                 }

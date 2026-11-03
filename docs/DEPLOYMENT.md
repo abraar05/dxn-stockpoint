@@ -84,10 +84,7 @@ never overwrite it.
    | `FTP_USERNAME` | `if0_12345678` |
    | `FTP_PASSWORD` | your InfinityFree password |
 
-2. Repo → **Settings → Variables → New repository variable**:
-   `DEPLOY_API` = `true`
-
-3. Push to `main` (or run **Actions → Deploy API (InfinityFree) → Run workflow**).
+2. Push to `main` (or run **Actions → Deploy API (InfinityFree) → Run workflow**).
 
 The workflow lints every PHP file, boots the API against a throwaway SQLite
 database, runs a smoke suite, and only then mirrors:
@@ -234,7 +231,7 @@ Use the bare origin, with or without `https://` — both clients normalise it
 | Change the PIN | Settings → Account → Change PIN |
 | Export data | Orders/Admin → **CSV**; Settings → **Backup JSON** |
 | Back up the database | InfinityFree → phpMyAdmin → Export |
-| Update the API | `git push` (DEPLOY_API=true), or re-upload over FTP |
+| Update the API | `git push` to `main`, or re-upload over FTP |
 | Check the API | `GET /api/v1/health` and `GET /api/v1/sync/status` |
 
 ### Security notes
