@@ -70,6 +70,12 @@ data class Order(
     @SerializedName("created_at") val createdAt: String = "",
     @SerializedName("updated_at") val updatedAt: String = "",
     val rev: Int = 0,
+    @SerializedName("courier_provider") val courierProvider: String? = null,
+    @SerializedName("courier_consignment_id") val courierConsignmentId: Int? = null,
+    @SerializedName("courier_tracking_code") val courierTrackingCode: String? = null,
+    @SerializedName("courier_status") val courierStatus: String? = null,
+    @SerializedName("courier_cod_amount") val courierCodAmount: Double? = null,
+    @SerializedName("courier_created_at") val courierCreatedAt: String? = null,
     val items: List<OrderLine> = emptyList()
 ) {
     val isCancelled: Boolean get() = status.equals("CANCELLED", ignoreCase = true)
@@ -146,6 +152,35 @@ data class GenericResponse(
     val success: Boolean = false,
     val message: String = ""
 )
+
+// ── Courier (SteadFast) ──────────────────────────────────────────────────────
+
+data class ShipOrderRequest(
+    @SerializedName("recipient_address") val recipientAddress: String,
+    @SerializedName("cod_amount") val codAmount: Double = 0.0,
+    @SerializedName("item_description") val itemDescription: String? = null,
+    @SerializedName("note") val note: String? = null,
+    @SerializedName("delivery_type") val deliveryType: Int = 0
+)
+
+data class CourierSettings(
+    @SerializedName("base_url") val baseUrl: String = "",
+    @SerializedName("api_key") val apiKey: String = "",
+    @SerializedName("secret_key") val secretKey: String = "",
+    @SerializedName("webhook_token") val webhookToken: String = "",
+    val configured: Boolean = false
+)
+
+data class CourierSettingsResponse(
+    val success: Boolean = false,
+    val settings: CourierSettings? = null
+)
+
+data class CourierBalanceResponse(
+    val success: Boolean = false,
+    val balance: Map<String, Any?>? = null
+)
+
 
 // ── Auth ────────────────────────────────────────────────────────────────────
 

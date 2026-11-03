@@ -204,6 +204,50 @@ function aboutCard() {
   `;
 }
 
+
+function courierCard() {
+  const disabled = store.state.isAdmin ? '' : 'disabled';
+  const base = 'https://dxn.infy.click';
+  const webhookUrl = `${getBase() || base}/api/v1/courier/webhook`;
+  return `
+    <div class="card card--pad" style="margin-bottom:18px" id="courierCard">
+      <div class="section-head" style="margin-bottom:12px">
+        <div><h2 style="font-size:15px">SteadFast courier</h2>
+          <p>Ship orders to customers via SteadFast. Credentials are stored on the shop server.</p></div>
+        <span class="badge badge--muted" id="sfStatusBadge">Not configured</span>
+      </div>
+
+      <div class="form-2">
+        <label class="field" style="grid-column:1/-1"><span>Base URL</span>
+          <input class="input" id="sfBase" value="https://portal.packzy.com/api/v1" ${disabled} spellcheck="false"></label>
+        <label class="field"><span>API Key</span>
+          <input class="input" id="sfApiKey" ${disabled} spellcheck="false" placeholder="jsyjsj…"></label>
+        <label class="field"><span>Secret Key</span>
+          <input class="input" id="sfSecret" type="password" ${disabled} spellcheck="false"></label>
+        <label class="field" style="grid-column:1/-1"><span>Webhook token (optional)</span>
+          <input class="input" id="sfWebhook" ${disabled} spellcheck="false" placeholder="leave blank to use the API key"></label>
+      </div>
+
+      <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+        <button class="btn btn--primary" type="button" id="sfSaveBtn" ${disabled}>${icon('check',16)} Save credentials</button>
+        <button class="btn btn--ghost" type="button" id="sfBalanceBtn" ${disabled}>${icon('wallet',16)} Check balance</button>
+      </div>
+
+      <div id="sfBalanceResult" style="margin-top:10px;font-size:12.5px;color:var(--muted)"></div>
+
+      <details style="margin-top:14px">
+        <summary style="cursor:pointer;font-size:12.5px;font-weight:700;color:var(--muted)">Webhook setup</summary>
+        <p style="font-size:12.5px;color:var(--muted);line-height:1.7;margin-top:8px">
+          In your SteadFast merchant panel set the callback URL to<br>
+          <code style="word-break:break-all">${esc(webhookUrl)}</code><br>
+          and the bearer token to your API key. SteadFast will then push delivery status updates
+          to this shop automatically.
+        </p>
+      </details>
+    </div>
+  `;
+}
+
 export function renderSettings(root) {
   root.innerHTML = `
     <div class="section-head">
@@ -212,6 +256,7 @@ export function renderSettings(root) {
     ${connectionCard()}
     ${accountCard()}
     ${profileCard()}
+    ${courierCard()}
     ${deviceCard()}
     ${aboutCard()}
   `;
@@ -336,6 +381,63 @@ function bind(root) {
     } finally {
       button.disabled = false;
       button.innerHTML = label;
+    }
+  });
+
+  const sfBadge = root.querySelector('#sfStatusBadge');
+  if (hasBase() && store.state.isAdmin) {
+    api.courierSettings().then((res) => {
+      const sf = res?.settings || {};
+      root.querySelector('#sfBase').value = sf.base_url || 'https://portal.packzy.com/api/v1';
+      root.querySelector('#sfApiKey').value = sf.api_key || '';
+      root.querySelector('#sfWebhook').value = sf.webhook_token || '';
+      if (sf.configured) {
+        sfBadge.textContent = 'Configured';
+        sfBadge.className = 'badge badge--ok';
+      }
+    }).catch(() => {});
+  }
+
+  root.querySelector('#sfSaveBtn')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    button.disabled = true;
+    const label = button.innerHTML;
+    button.innerHTML = '<span class="spinner"></span> Saving…';
+    const body = {
+      base_url: root.querySelector('#sfBase').value.trim(),
+      api_key: root.querySelector('#sfApiKey').value.trim(),
+      webhook_token: root.querySelector('#sfWebhook').value.trim(),
+    };
+    const secret = root.querySelector('#sfSecret').value.trim();
+    if (secret) body.secret_key = secret;
+    try {
+      if (!hasBase()) throw new Error('Connect the shop server first.');
+      await api.saveCourierSettings(body);
+      toast('SteadFast credentials saved.', 'ok');
+      sfBadge.textContent = 'Configured';
+      sfBadge.className = 'badge badge--ok';
+      root.querySelector('#sfSecret').value = '';
+    } catch (error) {
+      toast(error instanceof ApiError ? error.message : 'Could not save SteadFast settings.', 'error');
+    } finally {
+      button.disabled = false;
+      button.innerHTML = label;
+    }
+  });
+
+  root.querySelector('#sfBalanceBtn')?.addEventListener('click', async (event) => {
+    const button = event.currentTarget;
+    const target = root.querySelector('#sfBalanceResult');
+    button.disabled = true;
+    try {
+      if (!hasBase()) throw new Error('Connect the shop server first.');
+      const res = await api.courierBalance();
+      const bal = res?.balance?.current_balance;
+      target.innerHTML = `<span style="color:var(--success);font-weight:700">Current balance: ${money(bal ?? 0)} BDT</span>`;
+    } catch (error) {
+      target.innerHTML = `<span style="color:var(--danger)">${esc(error.message || 'Could not fetch balance.')}</span>`;
+    } finally {
+      button.disabled = false;
     }
   });
 

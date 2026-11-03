@@ -422,6 +422,9 @@ private fun OrdersTab(ordersState: UiState<List<Order>>) {
                                     Text(order.orderNumber, fontWeight = FontWeight.Bold, fontSize = 13.sp)
                                     Text(order.customerName, fontSize = 12.sp, color = Color.Gray)
                                     Text("৳${"%.2f".format(order.totalAmount)}", color = ForestGreen, fontWeight = FontWeight.Bold)
+                                    if (order.courierTrackingCode != null) {
+                                        Text("SteadFast: ${order.courierTrackingCode} (${order.courierStatus ?: "in_review"})", fontSize = 10.sp, color = Color(0xFF1976D2))
+                                    }
                                 }
                                 val chipColor = when (order.status) {
                                     "CONFIRMED" -> Color(0xFF4CAF50)

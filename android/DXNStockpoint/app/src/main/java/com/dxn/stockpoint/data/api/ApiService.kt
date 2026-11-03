@@ -67,6 +67,22 @@ interface ApiService {
     @PUT("api/v1/settings")
     suspend fun saveSettings(@Body body: Map<String, String>): SettingsResponse
 
+    // ── Courier (SteadFast) ──────────────────────────────────────────────────
+    @GET("api/v1/courier/settings")
+    suspend fun getCourierSettings(): CourierSettingsResponse
+
+    @PUT("api/v1/courier/settings")
+    suspend fun saveCourierSettings(@Body body: Map<String, String>): GenericResponse
+
+    @POST("api/v1/courier/ship/{id}")
+    suspend fun shipOrder(@Path("id") id: Int, @Body request: ShipOrderRequest): OrderEnvelope
+
+    @GET("api/v1/courier/status/{id}")
+    suspend fun courierStatus(@Path("id") id: Int): OrderEnvelope
+
+    @GET("api/v1/courier/balance")
+    suspend fun courierBalance(): CourierBalanceResponse
+
     // ── Sync ────────────────────────────────────────────────────────────────
     @GET("api/v1/sync")
     suspend fun sync(@Query("since") since: Int = 0): SyncResponse

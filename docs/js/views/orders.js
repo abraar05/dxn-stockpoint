@@ -324,6 +324,40 @@ export function openOrder(order) {
         `).join('')}
       </div>
 
+      <div class="card card--pad" style="margin-top:18px;margin-bottom:14px" id="courierBox">
+        <div class="section-head" style="margin-bottom:8px">
+          <div><h2 style="font-size:13px">SteadFast courier</h2></div>
+          ${order.courier_consignment_id
+            ? `<span class="badge badge--ok">Shipped</span>`
+            : `<span class="badge badge--muted">Not shipped</span>`}
+        </div>
+        ${order.courier_consignment_id ? `
+          <div class="list">
+            <div class="list__row">
+              <div class="list__main">
+                <div class="list__title">Consignment ${esc(order.courier_consignment_id)}</div>
+                <div class="list__sub">Tracking: <span class="mono">${esc(order.courier_tracking_code || '—')}</span> · ${esc(order.courier_status || 'in_review')}</div>
+              </div>
+              <button class="btn btn--sm btn--ghost" type="button" id="sfRefreshStatus">${icon('refresh',14)} Refresh</button>
+            </div>
+          </div>
+        ` : `
+          <p style="font-size:12.5px;color:var(--muted);margin-bottom:10px">
+            Create a SteadFast shipment for this order. Customer phone and an address are required.
+          </p>
+          <label class="field"><span>Recipient address</span>
+            <input class="input" id="sfAddress" placeholder="House 17, Road 3, Dhanmondi, Dhaka 1209" maxlength="250"></label>
+          <label class="field"><span>COD amount (BDT)</span>
+            <input class="input" id="sfCod" type="number" min="0" step="1" value="${num(order.total_amount)}"></label>
+          <label class="field"><span>Item description (optional)</span>
+            <input class="input" id="sfDesc" maxlength="250" placeholder="DXN products"></label>
+          <button class="btn btn--primary btn--block" type="button" id="sfShipBtn" style="margin-top:10px">
+            ${icon('truck',16)} Ship via SteadFast
+          </button>
+        `}
+        <div id="sfMsg" style="margin-top:8px;font-size:12.5px"></div>
+      </div>
+
       <details style="margin-top:18px">
         <summary style="cursor:pointer;font-size:12.5px;font-weight:700;color:var(--muted)">Show text receipt</summary>
         <pre class="receipt" style="margin-top:10px">${esc(text)}</pre>
@@ -355,6 +389,46 @@ export function openOrder(order) {
             chip.disabled = false;
           }
         });
+      });
+
+      const sfMsg = panel.querySelector('#sfMsg');
+      panel.querySelector('#sfShipBtn')?.addEventListener('click', async () => {
+        const btn = panel.querySelector('#sfShipBtn');
+        const address = panel.querySelector('#sfAddress')?.value.trim() || '';
+        const cod = num(panel.querySelector('#sfCod')?.value, order.total_amount);
+        const desc = panel.querySelector('#sfDesc')?.value.trim() || '';
+        if (!address) { toast('Recipient address is required.', 'error'); return; }
+        if (!hasBase()) { toast('Connect the shop server first.', 'error'); return; }
+        btn.disabled = true;
+        btn.innerHTML = '<span class="spinner"></span> Shipping…';
+        try {
+          const result = await api.shipOrder(order.id, { recipient_address: address, cod_amount: cod, item_description: desc });
+          if (result?.order) store.upsertOrders([result.order]);
+          toast('Shipment created with SteadFast.', 'ok');
+          closeModal();
+          store.syncNow({ quiet: true });
+        } catch (error) {
+          if (sfMsg) sfMsg.innerHTML = `<span style="color:var(--danger)">${esc(error.message || 'Could not create shipment.')}</span>`;
+          toast(error.message || 'Could not create shipment.', 'error');
+          btn.disabled = false;
+          btn.innerHTML = `${icon('truck',16)} Ship via SteadFast`;
+        }
+      });
+
+      panel.querySelector('#sfRefreshStatus')?.addEventListener('click', async () => {
+        const btn = panel.querySelector('#sfRefreshStatus');
+        btn.disabled = true;
+        try {
+          const result = await api.courierStatus(order.id);
+          if (result?.order) store.upsertOrders([result.order]);
+          toast(`Status: ${result.courier_status}`, 'ok');
+          closeModal();
+          store.syncNow({ quiet: true });
+        } catch (error) {
+          toast(error.message || 'Could not refresh status.', 'error');
+        } finally {
+          btn.disabled = false;
+        }
       });
 
       panel.querySelector('#orderPrint')?.addEventListener('click', () => printNow());

@@ -17,6 +17,7 @@ require $bootstrap;
 
 use DXN\Controllers\AuthController;
 use DXN\Controllers\CatalogController;
+use DXN\Controllers\CourierController;
 use DXN\Controllers\CustomerController;
 use DXN\Controllers\DashboardController;
 use DXN\Controllers\HealthController;
@@ -53,6 +54,15 @@ $router->post('/api/v1/products/{id}/restore', static fn (array $p) => CatalogCo
 $router->post('/api/v1/stock/update', static fn () => CatalogController::updateStock());
 $router->post('/api/v1/stock/adjust', static fn () => CatalogController::adjustStock());
 $router->get('/api/v1/stock/movements', static fn () => CatalogController::movements());
+// ── Courier (SteadFast) ─────────────────────────────────────────────────────
+$router->get('/api/v1/courier/settings', static fn () => CourierController::settings());
+$router->put('/api/v1/courier/settings', static fn () => CourierController::saveSettings());
+$router->post('/api/v1/courier/ship/{id}', static fn (array $p) => CourierController::ship($p));
+$router->get('/api/v1/courier/status/{id}', static fn (array $p) => CourierController::status($p));
+$router->get('/api/v1/courier/balance', static fn () => CourierController::balance());
+$router->post('/api/v1/courier/return/{id}', static fn (array $p) => CourierController::createReturn($p));
+$router->get('/api/v1/courier/returns', static fn () => CourierController::returns());
+$router->post('/api/v1/courier/webhook', static fn () => CourierController::webhook());
 
 // ── Orders ──────────────────────────────────────────────────────────────────
 $router->get('/api/v1/orders', static fn () => OrderController::index());

@@ -107,6 +107,13 @@ final class Schema
                 payment_method VARCHAR(24)  NOT NULL DEFAULT 'CASH',
                 note           TEXT         NULL,
                 source         VARCHAR(24)  NOT NULL DEFAULT 'web',
+                courier_provider        VARCHAR(32)  NULL,
+                courier_consignment_id   BIGINT       NULL,
+                courier_tracking_code   VARCHAR(64)  NULL,
+                courier_status          VARCHAR(32)  NULL,
+                courier_cod_amount     DECIMAL(12,2) NULL,
+                courier_created_at     DATETIME     NULL,
+                courier_note           TEXT         NULL,
                 created_at     DATETIME     NOT NULL,
                 updated_at     DATETIME     NOT NULL,
                 rev            BIGINT       NOT NULL DEFAULT 0
@@ -156,6 +163,16 @@ final class Schema
                 created_at DATETIME    NOT NULL
             ){$suffix}",
 
+            "CREATE TABLE IF NOT EXISTS courier_events (
+                id             {$pk},
+                order_id       INTEGER     NULL,
+                consignment_id BIGINT      NULL,
+                invoice        VARCHAR(64) NULL,
+                event_type     VARCHAR(32) NOT NULL DEFAULT 'unknown',
+                payload        TEXT        NULL,
+                created_at     DATETIME    NOT NULL
+            ){$suffix}",
+
             'CREATE UNIQUE INDEX idx_products_sku ON products (sku)',
             'CREATE INDEX idx_products_rev ON products (rev)',
             'CREATE INDEX idx_products_category ON products (category)',
@@ -168,6 +185,19 @@ final class Schema
             'CREATE UNIQUE INDEX idx_customers_member ON customers (dxn_member_id)',
             'CREATE INDEX idx_movements_product ON stock_movements (product_id)',
             'CREATE INDEX idx_attempts_ip ON auth_attempts (ip)',
+            'CREATE INDEX idx_orders_status ON orders (status)',
+            'CREATE INDEX idx_orders_customer ON orders (customer_id)',
+            'CREATE INDEX idx_products_active ON products (is_active)',
+            'CREATE INDEX idx_orders_courier ON orders (courier_consignment_id)',
+            'CREATE INDEX idx_courier_events_order ON courier_events (order_id)',
+            'CREATE INDEX idx_courier_events_consignment ON courier_events (consignment_id)',
+            'ALTER TABLE orders ADD COLUMN courier_provider VARCHAR(32) NULL',
+            'ALTER TABLE orders ADD COLUMN courier_consignment_id BIGINT NULL',
+            'ALTER TABLE orders ADD COLUMN courier_tracking_code VARCHAR(64) NULL',
+            'ALTER TABLE orders ADD COLUMN courier_status VARCHAR(32) NULL',
+            'ALTER TABLE orders ADD COLUMN courier_cod_amount DECIMAL(12,2) NULL',
+            'ALTER TABLE orders ADD COLUMN courier_created_at DATETIME NULL',
+            'ALTER TABLE orders ADD COLUMN courier_note TEXT NULL',
         ];
     }
 
@@ -185,6 +215,7 @@ final class Schema
         return [
             'products', 'orders', 'order_items', 'customers',
             'stock_movements', 'settings', 'sync_counter', 'auth_attempts', 'audit_log',
+            'courier_events',
         ];
     }
 
@@ -658,6 +689,10 @@ final class Schema
             'business_address'    => 'H # 1, R # 11, B # A, Chandrima Model Town, Dhaka-1207',
             'business_phone'      => '01939994578',
             'allow_public_orders' => '1',
+            'steadfast_base_url'    => 'https://portal.packzy.com/api/v1',
+            'steadfast_api_key'     => '',
+            'steadfast_secret_key'  => '',
+            'steadfast_webhook_token' => '',
         ];
     }
 }

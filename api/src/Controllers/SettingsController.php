@@ -19,6 +19,10 @@ final class SettingsController
         'business_address',
         'business_phone',
         'allow_public_orders',
+        'steadfast_base_url',
+        'steadfast_api_key',
+        'steadfast_secret_key',
+        'steadfast_webhook_token',
     ];
 
     public static function index(): void

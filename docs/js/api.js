@@ -209,6 +209,15 @@ export const api = {
   dashboard: () => request('/api/v1/dashboard'),
   salesReport: (from, to) => request(`/api/v1/reports/sales${qs({ from, to })}`),
 
+  // ── Courier (SteadFast) ─────────────────────────────────────────────────
+  courierSettings: () => request('/api/v1/courier/settings'),
+  saveCourierSettings: (body) => request('/api/v1/courier/settings', { method: 'PUT', body }),
+  shipOrder: (id, body = {}) => request(`/api/v1/courier/ship/${id}`, { method: 'POST', body }),
+  courierStatus: (id) => request(`/api/v1/courier/status/${id}`),
+  courierBalance: () => request('/api/v1/courier/balance'),
+  courierReturn: (id, reason = '') => request(`/api/v1/courier/return/${id}`, { method: 'POST', body: { reason } }),
+  courierReturns: () => request('/api/v1/courier/returns'),
+
   // ── Settings & sync ──────────────────────────────────────────────────────
   settings: () => request('/api/v1/settings'),
   saveSettings: (patch) => request('/api/v1/settings', { method: 'PUT', body: patch }),
