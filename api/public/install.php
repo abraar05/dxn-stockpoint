@@ -6,11 +6,17 @@ declare(strict_types=1);
  *
  *     https://your-subdomain.infinityfreeapp.com/install.php?key=<install_key>
  *
- * It creates the tables, seeds the 12 DXN products and stores a hashed shop
- * PIN. Re-running it is safe: it only adds what is missing.
+ * It creates the tables, seeds the approved 51-product catalog and stores a
+ * hashed shop PIN. Submitting again resets the PIN; use /api/v1/migrate for
+ * safe catalog upgrades on an already-installed shop.
  */
 
-require __DIR__ . '/../src/bootstrap.php';
+$bootstrap = __DIR__ . '/../src/bootstrap.php';
+if (!is_file($bootstrap)) {
+    // FTP deployment places this public file beside src/ at api/install.php.
+    $bootstrap = __DIR__ . '/src/bootstrap.php';
+}
+require $bootstrap;
 
 use DXN\Config;
 use DXN\Database;

@@ -8,7 +8,12 @@ declare(strict_types=1);
  * host: InfinityFree, cPanel, a VPS, or `php -S localhost:8080 -t api/public`.
  */
 
-require __DIR__ . '/../src/bootstrap.php';
+$bootstrap = __DIR__ . '/../src/bootstrap.php';
+if (!is_file($bootstrap)) {
+    // FTP deployment places this public file beside src/ at api/index.php.
+    $bootstrap = __DIR__ . '/src/bootstrap.php';
+}
+require $bootstrap;
 
 use DXN\Controllers\AuthController;
 use DXN\Controllers\CatalogController;

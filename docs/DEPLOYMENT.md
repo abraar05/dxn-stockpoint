@@ -90,12 +90,12 @@ The workflow lints every PHP file, boots the API against a throwaway SQLite
 database, runs a smoke suite, and only then mirrors:
 
 ```
-htdocs/api/index.php        ← api/public/index.php
-htdocs/api/install.php      ← api/public/install.php
-htdocs/api/.htaccess        ← api/public/.htaccess
-htdocs/api/src/**           ← api/src/**
-htdocs/api/config/**        ← api/config/**   (config.php excluded)
-htdocs/api/storage/**       ← api/storage/**  (guard file only)
+dxn.infy.click/htdocs/api/index.php     ← api/public/index.php
+dxn.infy.click/htdocs/api/install.php   ← api/public/install.php
+dxn.infy.click/htdocs/api/.htaccess     ← api/public/.htaccess
+dxn.infy.click/htdocs/api/src/**       ← api/src/**
+dxn.infy.click/htdocs/api/config/**    ← api/config/**   (config.php excluded)
+dxn.infy.click/htdocs/api/storage/**   ← api/storage/**  (guard file only)
 ```
 
 > PowerShell FTP alternative: `WinSCP` or `FTP-Deploy-Action` locally; the
@@ -103,7 +103,8 @@ htdocs/api/storage/**       ← api/storage/**  (guard file only)
 
 ### Option B — manual
 
-Upload the same four folders with FileZilla. Keep `config.php` on the server.
+Upload the same four folders into `dxn.infy.click/htdocs/api/` with FileZilla.
+Keep `config.php`, `installed.lock`, and all storage/database files on the server.
 
 ---
 
@@ -112,25 +113,26 @@ Upload the same four folders with FileZilla. Keep `config.php` on the server.
 Open in a browser:
 
 ```
-https://your-subdomain.infinityfreeapp.com/api/install.php?key=<install_key>
+https://dxn.infy.click/api/install.php?key=<install_key>
 ```
 
-It creates the tables, seeds the 12 DXN products (with their official product
-photos), and stores your hashed shop PIN. Re-running it is safe — it only adds
-what is missing.
+For a new installation it creates tables, seeds the 51-item approved catalog,
+and stores a hashed shop PIN. Do not resubmit the installer on an existing shop;
+use the idempotent migration endpoint instead so the current PIN is unchanged.
 
-**Upgrading from v2.0.1?** Upload the new `api/` files, keep your existing
-`config.php`, then re-run `install.php` (or `POST /api/v1/migrate` while signed
-in as admin). The migration fills product photos/descriptions and moves only
-untouched placeholder shop details to the Mohammadpur Stock Point profile.
+**Upgrading an existing shop?** Upload the new `api/` files, keep your existing
+`config.php`, `installed.lock`, and database, then run `GET /api/v1/migrate`.
+The migration refreshes the 51 catalog rows, preserves on-hand quantities and
+sales history, and soft-archives retired starter SKUs; it does not change the
+shop PIN.
 
 Verify:
 
 ```powershell
-curl.exe https://your-subdomain.infinityfreeapp.com/api/v1/health
+curl.exe https://dxn.infy.click/api/v1/health
 ```
 
-Expected: `{"success":true,"status":"ok","version":"2.1.0","driver":"mysql",...}`
+Expected: `{"success":true,"status":"ok","version":"2.1.2","driver":"mysql",...}`
 
 > If you see `database_unavailable`, the DB host/user/pass in `config.php` are
 > wrong — InfinityFree always uses `sqlNNN.infinityfree.com`, not `localhost`.

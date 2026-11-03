@@ -29,7 +29,10 @@ final class Request
 
         $script = $_SERVER['SCRIPT_NAME'] ?? '';
         $base = rtrim(str_replace('\\', '/', dirname($script)), '/');
-        if ($base !== '' && $base !== '/' && str_starts_with($path, $base)) {
+        // When deployed at /api/, the /api prefix is part of the public route
+        // contract (/api/v1/...). Do not strip it from rewritten requests.
+        $publicApiPath = $base === '/api' && str_starts_with($path, '/api/v1/');
+        if (!$publicApiPath && $base !== '' && $base !== '/' && str_starts_with($path, $base)) {
             $path = substr($path, strlen($base));
         }
 

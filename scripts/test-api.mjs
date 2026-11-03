@@ -94,6 +94,12 @@ async function request(path, { method = 'GET', body, token, apiKey } = {}) {
 async function main() {
   const php = findPhp();
   const flags = phpFlags(php);
+  const pathProbe = spawnSync(php, [...flags, '-r', `require ${JSON.stringify(join(apiDir, 'src/bootstrap.php'))}; $_SERVER['REQUEST_URI']='/api/v1/health'; $_SERVER['SCRIPT_NAME']='/api/index.php'; echo \\DXN\\Request::path();`], {
+    encoding: 'utf8',
+    env: { ...process.env, DXN_DRIVER: 'sqlite', DXN_DB_PATH: join(tmpdir(), 'dxn-path-probe.sqlite') },
+  });
+  check('nested /api mount preserves /api/v1 route prefix', pathProbe.status === 0 && pathProbe.stdout.trim() === '/api/v1/health', pathProbe.stderr || pathProbe.stdout);
+
   const workdir = mkdtempSync(join(tmpdir(), 'dxn-api-'));
   const dbPath = join(workdir, 'test.sqlite');
 
