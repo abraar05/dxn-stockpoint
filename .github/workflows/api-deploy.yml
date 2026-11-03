@@ -92,7 +92,8 @@ jobs:
             $check("catalogue has exactly 51 active products", count($catalogRows) === 51);
             $check("catalogue SKUs are unique", count(array_unique(array_column($catalogRows, "sku"))) === 51);
 
-            $offlineProduct = $catalogRows[0] ?? [];
+            $offlineCandidates = array_values(array_filter($catalogRows, static fn (array $product): bool => (int) ($product["stock_qty"] ?? 0) > 0));
+            $offlineProduct = $offlineCandidates[0] ?? [];
             $offlineBody = @file_get_contents($base . "/orders", false, stream_context_create([
                 "http" => [
                     "method" => "POST",
