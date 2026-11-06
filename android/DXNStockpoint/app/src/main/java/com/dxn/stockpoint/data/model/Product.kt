@@ -1,5 +1,6 @@
 package com.dxn.stockpoint.data.model
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -18,6 +19,7 @@ data class Product(
     @SerializedName("stock_qty") val stockQty: Int = 0,
     @SerializedName("low_stock_at") val lowStockAt: Int = 5,
     @SerializedName("image_url") val imageUrl: String? = null,
+    @field:JsonAdapter(BooleanTypeAdapter::class)
     @SerializedName("is_active") val isActive: Boolean = true,
     @SerializedName("created_at") val createdAt: String = "",
     @SerializedName("updated_at") val updatedAt: String = "",

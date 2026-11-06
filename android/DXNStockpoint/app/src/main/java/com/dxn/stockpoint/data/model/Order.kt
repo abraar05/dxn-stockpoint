@@ -1,5 +1,6 @@
 package com.dxn.stockpoint.data.model
 
+import com.google.gson.annotations.JsonAdapter
 import com.google.gson.annotations.SerializedName
 
 /**
@@ -18,6 +19,7 @@ data class PlaceOrderRequest(
     @SerializedName("customer_name") val customerName: String,
     @SerializedName("customer_phone") val customerPhone: String? = null,
     @SerializedName("dxn_member_id") val dxnMemberId: String? = null,
+    @field:JsonAdapter(BooleanTypeAdapter::class)
     @SerializedName("is_member") val isMember: Boolean = false,
     @SerializedName("payment_method") val paymentMethod: String = "CASH",
     val discount: Double = 0.0,
@@ -58,6 +60,7 @@ data class Order(
     @SerializedName("customer_name") val customerName: String = "",
     @SerializedName("customer_phone") val customerPhone: String? = null,
     @SerializedName("dxn_member_id") val dxnMemberId: String? = null,
+    @field:JsonAdapter(BooleanTypeAdapter::class)
     @SerializedName("is_member") val isMember: Boolean = false,
     val subtotal: Double = 0.0,
     val discount: Double = 0.0,
